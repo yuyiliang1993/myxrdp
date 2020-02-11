@@ -642,12 +642,17 @@ xrdp_wm_init(struct xrdp_wm *self)
     xrdp_wm_load_static_pointers(self);
     self->screen->bg_color = self->xrdp_config->cfg_globals.ls_top_window_bg_color;
 
-    if (self->session->client_info->rdp_autologin)
+	//读取配置文件
+	//extra code by yuliang
+	xrdp_wm_set_login_mode(self, 2);
+#if 0
+	
+    if(self->session->client_info->rdp_autologin)
     {
         /*
          * NOTE: this should eventually be accessed from self->xrdp_config
          */
-
+         
         g_snprintf(cfg_file, 255, "%s/xrdp.ini", XRDP_CFG_PATH);
         fd = g_file_open(cfg_file); /* xrdp.ini */
         if (fd != -1)
@@ -801,7 +806,7 @@ xrdp_wm_init(struct xrdp_wm *self)
         xrdp_wm_set_focused(self, self->login_window);
         xrdp_wm_set_login_mode(self, 1);
     }
-
+#endif
     g_writeln("out xrdp_wm_init: ");
     return 0;
 }
@@ -1949,6 +1954,7 @@ xrdp_wm_login_mode_changed(struct xrdp_wm *self)
     }
     else if (self->login_mode == 2)
     {
+ #if 0   
         if (xrdp_mm_connect(self->mm) == 0)
         {
             xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
@@ -1959,6 +1965,10 @@ xrdp_wm_login_mode_changed(struct xrdp_wm *self)
         {
             /* we do nothing on connect error so far */
         }
+#endif
+		xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
+        xrdp_wm_delete_all_children(self);
+        self->dragging = 0;
     }
     else if (self->login_mode == 10)
     {
