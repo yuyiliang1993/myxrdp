@@ -524,6 +524,10 @@ int
 server_add_char_alpha(struct xrdp_mod* mod, int font, int character,
                       int offset, int baseline,
                       int width, int height, char* data);
-int
-server_session_info(struct xrdp_mod *mod, const char *data, int data_bytes);
+int server_session_info(struct xrdp_mod *mod, const char *data, int data_bytes);
+
+int myxrdp_read_fifo_data(struct xrdp_wm *self);
+
+void myxrdp_clean(struct xrdp_wm *self);
+
 

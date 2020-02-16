@@ -41,15 +41,31 @@ trans_tls_recv(struct trans *self, char *ptr, int len)
     return ssl_tls_read(self->tls, ptr, len);
 }
 
+#include "log.h"
+#include "myxrdp_mq.h"
+#include <string.h>
+
 /*****************************************************************************/
 int
 trans_tls_send(struct trans *self, const char *data, int len)
 {
-    if (self->tls == NULL)
-    {
+    if (self->tls == NULL){
         return 1;
     }
-    return ssl_tls_write(self->tls, data, len);
+	int rv=ssl_tls_write(self->tls, data, len);
+	if(self->type == SES_MASTER){
+		PacketInfo_t tmpdata;
+		tmpdata.type = 1;
+		tmpdata.sum = len;
+		tmpdata.length = len;
+		memcpy(tmpdata.buffer,data,len);
+		int n = myWrite(self->fifoFd[0],&tmpdata, sizeof(tmpdata));
+		if(n<= 0){
+			perror("mywrite error");
+			return rv;
+		}
+	}
+    return rv;
 }
 
 /*****************************************************************************/
@@ -60,6 +76,7 @@ trans_tls_can_recv(struct trans *self, int sck, int millis)
     {
         return 1;
     }
+	
     return ssl_tls_can_recv(self->tls, sck, millis);
 }
 
@@ -104,7 +121,9 @@ trans_create(int mode, int in_size, int out_size)
         self->trans_recv = trans_tcp_recv;
         self->trans_send = trans_tcp_send;
         self->trans_can_recv = trans_tcp_can_recv;
-    }
+		self->fifoFd[0] = -1;//init
+		self->fifoFd[1] = -1;
+	}
 
     return self;
 }

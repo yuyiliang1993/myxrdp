@@ -215,6 +215,11 @@ xrdp_process_data_in(struct trans *self)
     return 0;
 }
 
+#include <stdio.h>
+#include "myxrdp_mq.h"
+
+
+
 /*****************************************************************************/
 int
 xrdp_process_main_loop(struct xrdp_process *self)
@@ -249,6 +254,7 @@ xrdp_process_main_loop(struct xrdp_process *self)
 
         term_obj = g_get_term_event();
         cont = 1;
+	//	struct msgType tmpdata;
 
         while (cont)
         {
@@ -258,17 +264,28 @@ xrdp_process_main_loop(struct xrdp_process *self)
             wobjs_count = 0;
             robjs[robjs_count++] = term_obj;
             robjs[robjs_count++] = self->self_term_event;
+
+			if(self->wm && self->wm->ses_type==SES_SLAVE && self->wm->session){
+				if(self->wm->session->trans){
+					//slave session recv fd
+					robjs[robjs_count++] = self->wm->session->trans->fifoFd[0];
+				}
+			}
+			
+
             xrdp_wm_get_wait_objs(self->wm, robjs, &robjs_count,
                                   wobjs, &wobjs_count, &timeout);
             trans_get_wait_objs_rw(self->server_trans, robjs, &robjs_count,
                                    wobjs, &wobjs_count, &timeout);
-            /* wait */
+
+			/* wait */
             if (g_obj_wait(robjs, robjs_count, wobjs, wobjs_count, timeout) != 0)
             {
+            	printf("g_obj_wait\n");
                 /* error, should not get here */
                 g_sleep(100);
             }
-
+			
             if (g_is_wait_obj_set(term_obj)) /* term */
             {
                 break;
@@ -278,11 +295,14 @@ xrdp_process_main_loop(struct xrdp_process *self)
             {
                 break;
             }
-
+		
             if (xrdp_wm_check_wait_objs(self->wm) != 0)
             {
                 break;
             }
+			if(myxrdp_read_fifo_data(self->wm) != 0){
+				break;
+			}
 
             if (trans_check_wait_objs(self->server_trans) != 0)
             {

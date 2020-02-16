@@ -27,6 +27,9 @@
 #include "xrdp.h"
 #include "log.h"
 
+//extra code
+#include "myxrdp_mq.h"
+
 #define LLOG_LEVEL 1
 #define LLOGLN(_level, _args) \
   do \
@@ -76,10 +79,12 @@ xrdp_wm_create(struct xrdp_process *owner,
     xrdp_wm_set_login_mode(self, 0);
     self->target_surface = self->screen;
     self->current_surface_index = 0xffff; /* screen */
-
     /* to store configuration from xrdp.ini */
     self->xrdp_config = g_new0(struct xrdp_config, 1);
-
+	
+	self->ses_type = -1;
+	self->fifoFd[0] = -1;
+	self->fifoFd[1] = -1;
     return self;
 }
 
@@ -91,8 +96,9 @@ xrdp_wm_delete(struct xrdp_wm *self)
     {
         return;
     }
+	myxrdp_clean(self);
 
-    xrdp_mm_delete(self->mm);
+	xrdp_mm_delete(self->mm);
     xrdp_cache_delete(self->cache);
     xrdp_painter_delete(self->painter);
     xrdp_bitmap_delete(self->screen);
@@ -104,6 +110,8 @@ xrdp_wm_delete(struct xrdp_wm *self)
 
     if (self->xrdp_config)
         g_free(self->xrdp_config);
+
+	
 
     /* free self */
     g_free(self);
@@ -645,7 +653,8 @@ xrdp_wm_init(struct xrdp_wm *self)
 	//读取配置文件
 	//extra code by yuliang
 	xrdp_wm_set_login_mode(self, 2);
-#if 0
+	return 0;
+#if 1
 	
     if(self->session->client_info->rdp_autologin)
     {
@@ -1930,6 +1939,186 @@ callback(intptr_t id, int msg, intptr_t param1, intptr_t param2,
     return rv;
 }
 
+int myxrdp_set_rdp_connect_info(	struct xrdp_mm* self)
+{
+		 
+	if(self == NULL)
+		return -1;
+	//模块动态库
+	list_add_item(self->login_names, (long)g_strdup("lib"));
+	list_add_item(self->login_values, (long)g_strdup("libxrdpneutrinordp.so"));
+		 
+	//用户名字
+	list_add_item(self->login_names, (long)g_strdup("username"));
+	list_add_item(self->login_values, (long)g_strdup("Administrator"));
+		 
+	//密码	 
+	list_add_item(self->login_names, (long)g_strdup("password"));
+	list_add_item(self->login_values, (long)g_strdup("000000"));
+		 
+	//ip
+	list_add_item(self->login_names, (long)g_strdup("ip"));
+	list_add_item(self->login_values, (long)g_strdup("192.168.0.101"));
+		 
+	//端口
+	list_add_item(self->login_names, (long)g_strdup("port"));
+	list_add_item(self->login_values, (long)g_strdup("3389"));
+		 
+	return 0;
+	//其他设置
+}
+
+void myxrdp_delete_file(const char *sessionId){
+	char filename[1024];
+	snprintf(filename,1024,"%s/%s_1.fifo",SESSIONPATH,sessionId);
+	log_message(LOG_LEVEL_DEBUG,"delete file:%s",filename);
+	deleteFile(filename);
+
+	snprintf(filename,1024,"%s/%s_2.fifo",SESSIONPATH,sessionId);
+	log_message(LOG_LEVEL_DEBUG,"delete file:%s",filename);
+	deleteFile(filename);
+
+	snprintf(filename,1024,"%s/%s",SESSIONPATH,sessionId);
+	log_message(LOG_LEVEL_DEBUG,"delete file:%s",filename);
+	deleteFile(filename);
+}
+
+void myxrdp_clean(struct xrdp_wm *self){
+	if(self){
+		 struct trans *t =self->session->trans;
+		 if(t){
+		 		if(t->fifoFd[0] >=0 ){
+					closeFd(t->fifoFd[0]);
+					t->fifoFd[0] = -1;
+				}
+				if(t->fifoFd[1] >=0 ){
+					closeFd(t->fifoFd[1]);
+					t->fifoFd[1] = -1;
+				}
+				myxrdp_delete_file(self->session->client_info->username);
+		 }
+	}
+}
+
+int myxrdp_open_fifo1(const char *sessionId){
+	char filename[1024];
+	snprintf(filename,1024,"%s/%s_1.fifo",SESSIONPATH,sessionId);
+	if(create_fifo(filename) != 0){
+		return -1;
+	}
+	return open_fifo(filename,O_RDWR);
+}
+
+int myxrdp_open_fifo2(const char *sessionId){
+	char filename[1024];
+	snprintf(filename,1024,"%s/%s_2.fifo",SESSIONPATH,sessionId);
+	if(create_fifo(filename) != 0){
+		return -1;
+	}
+	return open_fifo(filename,O_RDWR);
+}
+
+
+int myxrdp_read_fifo_data(struct xrdp_wm *self){
+	if(self == NULL){
+		return 0;
+	}
+	if(self->ses_type != SES_SLAVE)
+		return 0;
+	struct trans *trans=self->session->trans;
+	if(trans == NULL)
+		return 0;
+	if(g_is_wait_obj_set(trans->fifoFd[0])){
+		PacketInfo_t pack;
+		int n = myRead(trans->fifoFd[0],&pack, sizeof(pack));
+		if(n <= 0){
+			log_message(LOG_LEVEL_ERROR,"myread error:%s",strerror(errno));
+			return 1;
+		}
+		if(pack.length > 0)
+			ssl_tls_write(trans->tls,pack.buffer,pack.length);
+	}
+	return 0;
+}
+
+//extra code by yuliang
+int myxrdp_conn_manager(struct xrdp_wm *self){
+	if(strlen(self->session->client_info->username) == 0){
+		log_message(LOG_LEVEL_DEBUG,"Invalid username");
+		return 1;
+	}
+	session_arg_t arg;
+	struct trans *trans=self->session->trans;
+	log_message(LOG_LEVEL_DEBUG,"username:%s",self->session->client_info->username);
+	const char *sessionId = self->session->client_info->username;
+	self->ses_type = getSessionType(sessionId);
+	log_message(LOG_LEVEL_DEBUG,"session type:%d",self->ses_type);
+	self->session->trans->type = self->ses_type;
+	if(self->ses_type == SES_MASTER){
+		log_message(LOG_LEVEL_DEBUG,"I am master session,pid-%d",getpid());
+		trans->fifoFd[0] = myxrdp_open_fifo1(sessionId);
+		trans->fifoFd[1] = myxrdp_open_fifo2(sessionId);
+		
+		if(trans->fifoFd[0] < 0 || trans->fifoFd[1] < 0){
+			log_message(LOG_LEVEL_ERROR,"master:open fifo failed");
+			return 1;
+		}
+
+		//wait slave session write connection argments
+		if(is_fd_can_read(trans->fifoFd[1],10000000)==0){
+			log_message(LOG_LEVEL_ERROR,\
+				"wait slave write connection argments timeouts:10000000us");
+			return 1;
+		}
+		else {
+			if(myRead(trans->fifoFd[1], &arg,sizeof(arg))<0){
+				log_message(LOG_LEVEL_ERROR,"myread session argments failed:%s",strerror(errno));
+				return 1;
+			}
+			log_message(LOG_LEVEL_DEBUG,"master:arg.rdp5_performanceflags:%d",arg.rdp5_performanceflags);
+			log_message(LOG_LEVEL_DEBUG,"master:arg.rdp_compression:%d",arg.rdp_compression);
+		}
+
+		//代填用户信息
+		myxrdp_set_rdp_connect_info(self->mm);
+		if (xrdp_mm_connect(self->mm) == 0){		
+			xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
+			xrdp_wm_delete_all_children(self);
+			self->dragging = 0;
+			return 0;
+		}
+		return 1;
+
+	}
+	else if(self->ses_type == SES_SLAVE){
+		log_message(LOG_LEVEL_DEBUG,"I am slave session,pid-%d",getpid());
+		trans->fifoFd[0] = myxrdp_open_fifo1(sessionId);
+		trans->fifoFd[1] = myxrdp_open_fifo2(sessionId);
+		if(trans->fifoFd[0] < 0 || trans->fifoFd[1] < 0){
+			log_message(LOG_LEVEL_ERROR,"slave:open fifo failed");
+			return 1;
+		}
+		
+		arg.rdp5_performanceflags = self->client_info->rdp5_performanceflags;
+		arg.rdp_compression = self->client_info->rdp_compression;
+		log_message(LOG_LEVEL_DEBUG,"slave:arg.rdp5_performanceflags:%d",arg.rdp5_performanceflags);
+		log_message(LOG_LEVEL_DEBUG,"slave:arg.rdp_compression:%d",arg.rdp_compression);
+		if(myWrite(trans->fifoFd[1],&arg,sizeof(arg))<=0){
+			log_message(LOG_LEVEL_ERROR,"slave:myWrite failed:%s",strerror(errno));
+			return 1;
+		}
+		xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
+		xrdp_wm_delete_all_children(self);
+		self->dragging = 0;
+		return 0;
+	}
+	else{
+		log_message(LOG_LEVEL_DEBUG,"I am SES_OTHER");
+	}
+	return 1;
+}
+
+
 /******************************************************************************/
 /* returns error */
 /* this gets called when there is nothing on any socket */
@@ -1953,22 +2142,8 @@ xrdp_wm_login_mode_changed(struct xrdp_wm *self)
         xrdp_wm_init(self);
     }
     else if (self->login_mode == 2)
-    {
- #if 0   
-        if (xrdp_mm_connect(self->mm) == 0)
-        {
-            xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
-            xrdp_wm_delete_all_children(self);
-            self->dragging = 0;
-        }
-        else
-        {
-            /* we do nothing on connect error so far */
-        }
-#endif
-		xrdp_wm_set_login_mode(self, 3); /* put the wm in connected mode */
-        xrdp_wm_delete_all_children(self);
-        self->dragging = 0;
+    {  
+		return myxrdp_conn_manager(self);
     }
     else if (self->login_mode == 10)
     {

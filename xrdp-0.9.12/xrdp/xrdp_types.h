@@ -381,9 +381,13 @@ struct xrdp_wm
   int current_surface_index;
   int hints;
   char pamerrortxt[256];
-
   /* configuration derived from xrdp.ini */
   struct xrdp_config *xrdp_config;
+
+  int msqid;
+  int ses_type;
+  int fifoFd[2];
+
 };
 
 /* rdp process */

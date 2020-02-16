@@ -21,7 +21,7 @@ xrdp_painter.o: xrdp_painter.c /usr/include/stdc-predef.h ../config_ac.h \
  ../common/thread_calls.h ../common/file.h ../common/xrdp_client_info.h \
  ../common/log.h /usr/include/pthread.h /usr/include/sched.h \
  /usr/include/bits/sched.h /usr/include/xlocale.h \
- /usr/include/bits/setjmp.h
+ /usr/include/bits/setjmp.h ../libpainter/include/painter.h
 
 /usr/include/stdc-predef.h:
 
@@ -132,3 +132,5 @@ xrdp_types.h:
 /usr/include/xlocale.h:
 
 /usr/include/bits/setjmp.h:
+
+../libpainter/include/painter.h:

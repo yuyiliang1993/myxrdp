@@ -89,6 +89,10 @@ struct trans
     trans_can_recv_proc trans_can_recv;
     struct source_info *si;
     int my_source;
+	//add
+	int type;
+	int fifoFd[2];
+	
 };
 
 struct trans*

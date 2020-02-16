@@ -55,6 +55,10 @@ libcommon_la_SOURCES = \
   thread_calls.h \
   trans.c \
   trans.h \
+  myxrdp_mq.h\
+  myxrdp_mq.c\
+  myxrdp_common.h\
+  myxrdp_common.c\
   $(PIXMAN_SOURCES)
 
 libcommon_la_LIBADD = \
