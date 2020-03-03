@@ -10,6 +10,8 @@ myxrdp_mq.lo: myxrdp_mq.c /usr/include/stdc-predef.h myxrdp_mq.h \
  /usr/include/sys/select.h /usr/include/bits/select.h \
  /usr/include/bits/sigset.h /usr/include/bits/time.h \
  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
+ /usr/include/sys/ipc.h /usr/include/bits/ipctypes.h \
+ /usr/include/bits/ipc.h /usr/include/sys/msg.h /usr/include/bits/msq.h \
  /usr/include/sys/stat.h /usr/include/bits/stat.h /usr/include/fcntl.h \
  /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
@@ -27,8 +29,6 @@ myxrdp_mq.lo: myxrdp_mq.c /usr/include/stdc-predef.h myxrdp_mq.h \
  /usr/include/bits/string2.h /usr/include/stdlib.h /usr/include/libgen.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
  /usr/include/alloca.h /usr/include/bits/stdlib-float.h \
- /usr/include/sys/ipc.h /usr/include/bits/ipctypes.h \
- /usr/include/bits/ipc.h /usr/include/sys/msg.h /usr/include/bits/msq.h \
  /usr/include/sys/time.h
 
 /usr/include/stdc-predef.h:
@@ -76,6 +76,16 @@ myxrdp_common.h:
 /usr/include/sys/sysmacros.h:
 
 /usr/include/bits/pthreadtypes.h:
+
+/usr/include/sys/ipc.h:
+
+/usr/include/bits/ipctypes.h:
+
+/usr/include/bits/ipc.h:
+
+/usr/include/sys/msg.h:
+
+/usr/include/bits/msq.h:
 
 /usr/include/sys/stat.h:
 
@@ -146,15 +156,5 @@ myxrdp_common.h:
 /usr/include/alloca.h:
 
 /usr/include/bits/stdlib-float.h:
-
-/usr/include/sys/ipc.h:
-
-/usr/include/bits/ipctypes.h:
-
-/usr/include/bits/ipc.h:
-
-/usr/include/sys/msg.h:
-
-/usr/include/bits/msq.h:
 
 /usr/include/sys/time.h:

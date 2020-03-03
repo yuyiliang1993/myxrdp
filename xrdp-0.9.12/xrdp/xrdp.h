@@ -35,6 +35,10 @@
 #include "xrdp_client_info.h"
 #include "log.h"
 
+
+
+
+
 /* xrdp.c */
 long
 g_xrdp_sync(long (*sync_func)(long param1, long param2), long sync_param1,
@@ -525,9 +529,3 @@ server_add_char_alpha(struct xrdp_mod* mod, int font, int character,
                       int offset, int baseline,
                       int width, int height, char* data);
 int server_session_info(struct xrdp_mod *mod, const char *data, int data_bytes);
-
-int myxrdp_read_fifo_data(struct xrdp_wm *self);
-
-void myxrdp_clean(struct xrdp_wm *self);
-
-

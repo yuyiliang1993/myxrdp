@@ -2,6 +2,16 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <libgen.h>
+#include <stdlib.h>
 
 int mq_create(const char *sessionid){
 	char pathName[BUFFERSIZE];
@@ -17,14 +27,14 @@ int mq_open(const char *sessionid){
 	return msgget(key,0666);
 }
 
-int mq_write(int msqid,const void *msgp,size_t size){
+int mq_write(int msqid,const void *msgp,int size){
 	return msgsnd(msqid,msgp, size,0);
 }
-int mq_recv(int msqid,void *msgp,size_t size,long int type){
+int mq_recv(int msqid,void *msgp,int size,long int type){
 	return msgrcv(msqid, msgp, size,type,IPC_NOWAIT);
 }
 
-int mq_timeout_recv(int msqid,void *msgp,size_t size,long int type,int ms){
+int mq_timeout_recv(int msqid,void *msgp,int size,long int type,int ms){
 	int rv;
 	int count = 0;
 	do{

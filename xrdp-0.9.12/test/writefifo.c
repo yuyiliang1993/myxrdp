@@ -1,4 +1,5 @@
 #include "common.h"
+#if 0
 int main(int argc,char** argv)
 {
 	char buf_r[1024];
@@ -34,3 +35,4 @@ int main(int argc,char** argv)
 	unlink(filename); //删除文件
 	return 0;
 }
+#endif

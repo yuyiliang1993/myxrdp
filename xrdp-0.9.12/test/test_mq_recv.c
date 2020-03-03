@@ -1,6 +1,6 @@
 #include "mq.h"
 #include <poll.h>
-
+#if 0
 int is_wait_read(int fd,int ms){	
 	struct pollfd ep;
 	ep.fd = fd;
@@ -35,3 +35,4 @@ int main(int argc,char* argv[]){
 	}
 	return 0;
 }
+#endif

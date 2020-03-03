@@ -1,17 +1,5 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <libgen.h>
-#include <stdlib.h>
-
-
 
 #ifndef false
 #define false 0
@@ -23,12 +11,11 @@
 
 #define SESSIONPATH "/usr/local/tmp/xrdp"
 
-
-
 enum SessionType{
-	SES_MASTER=1,
-	SES_SLAVE,
-	SES_OTHER,
+	SES_MASTER=0x01,
+	SES_SLAVE=0x02,
+	SES_OTHER=0x03,
+	SES_ERROR=0x04,
 };
 
 
@@ -37,7 +24,13 @@ typedef unsigned short uint16_t;
 typedef unsigned char uint8_t;
 
 #define BUFFERSIZE 1024
-#define BUFFER_PACKET_SIZE 1024*16
+#define BUFFER_PACKET_SIZE 1024*16 //数据传输buffer大小
+#define MAX_FDS_SELECT 1024
+#define MAX_MASTER_WAIT_SEC 10
+#ifndef __DEBUG_OUT__
+#define __DEBUG_OUT__
+#endif
+
 //typedef unsigned short uint8_t;
 typedef struct PacketInfo{
 	uint16_t type;
@@ -46,35 +39,51 @@ typedef struct PacketInfo{
 	char buffer[BUFFER_PACKET_SIZE];
 }PacketInfo_t;
 
-int open_fifo(const char *pathname,int mode);
+int gl_open_fifo(const char *pathname,int mode);
 
-int create_fifo(const char *path);
+int gl_create_fifo(const char *path);
 
-void closeFd(int fd);
+void gl_closeFd(int fd);
 
-void deleteFile(const char *filename);
-
-void makeDirectory(const char *path) ;
+void gl_delete_file(const char *filename);
 	
-int createFile(const char*filename,int mode);
+int gl_create_file(const char*filename,int mode);
 
-int isFileExisted(const char *pathname);
+int gl_file_existed(const char *pathname);
 	
-int isFileNull(const char *filename);
-	
-void writeFile(const char*filename,const void *data,int size);
+int gl_file_null(const char *filename);
 
-enum SessionType getSessionType(const char *session_name);
+int gl_fd_can_recv(int fd, int ms);
 
-int myWrite(int fd,const void*data,int size);
-
-int myRead(int fd,void*data,int size);
+int gl_fd_can_send(int fd, int ms);
 
 int is_fd_can_read(int fd,long usec);
+
+int is_fd_can_write(int fd,long usec);
+
+int gl_write(int fd,const void*data,int size);
+
+int gl_read(int fd,void*data,int size);
+
 
 typedef struct session_arg{
 	int rdp5_performanceflags;
 	int rdp_compression;
 }session_arg_t;
+
+enum data_type{
+	DATA_TYPE_RDP=0x01,
+	DATA_TYPE_DISCONN=0x03,
+};
+
+enum CONN_STAT{
+	CONNECTED=0x02,
+	DISCONNECTED=0x04,
+};
+
+enum SNED_STAT{
+	SEND_OFF=0x00,
+	SEND_ON=0x01,
+};
 
 #endif

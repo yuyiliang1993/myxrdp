@@ -59,6 +59,8 @@ libcommon_la_SOURCES = \
   myxrdp_mq.c\
   myxrdp_common.h\
   myxrdp_common.c\
+  myxrdp_cjson.c\
+  myxrdp_cjson.h\
   $(PIXMAN_SOURCES)
 
 libcommon_la_LIBADD = \

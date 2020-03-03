@@ -1,7 +1,7 @@
 #include "mq.h"
 #include <poll.h>
 
-
+#if 0
 int sendpacket(int fd,const char *data,int type,int sum,int len){
 	struct msgType tdata;
 	printf("sum-%d,len-%d:%s\n",sum,len,data);
@@ -52,4 +52,4 @@ int main(int argc,char *argv[]){
 	return 0;
 
 }
-
+#endif

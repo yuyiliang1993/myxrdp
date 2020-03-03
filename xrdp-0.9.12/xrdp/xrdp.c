@@ -23,6 +23,8 @@
 #endif
 
 #include "xrdp.h"
+#include "myxrdp.h"
+
 #include "log.h"
 #include "xrdp_configure_options.h"
 
@@ -676,6 +678,9 @@ main(int argc, char **argv)
     }
 
     g_listen->startup_params = startup_params;
+	g_writeln("start xrdp_listen_main_loop");
+	sem_unlink(SEM_X11_NAME);
+	
     exit_status = xrdp_listen_main_loop(g_listen);
     xrdp_listen_delete(g_listen);
     tc_mutex_delete(g_sync_mutex);

@@ -2201,6 +2201,7 @@ g_file_read(int fd, char *ptr, int len)
 #endif
 }
 
+
 /*****************************************************************************/
 /* write to file, returns the number of bytes written or -1 on error */
 int
@@ -2221,6 +2222,7 @@ g_file_write(int fd, const char *ptr, int len)
     return write(fd, ptr, len);
 #endif
 }
+
 
 /*****************************************************************************/
 /* move file pointer, returns offset on success, -1 on failure */

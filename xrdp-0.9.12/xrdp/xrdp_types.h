@@ -27,6 +27,7 @@
 #include "xrdp_rail.h"
 #include "xrdp_constants.h"
 #include "fifo.h"
+#include "trans.h"
 
 #define MAX_NR_CHANNELS 16
 #define MAX_CHANNEL_NAME 16
@@ -270,6 +271,7 @@ struct xrdp_cache
   struct xrdp_brush_item brush_items[64];
   struct xrdp_os_bitmap_item os_bitmap_items[2000];
   struct list* xrdp_os_del_list;
+
 };
 
 /* defined later */
@@ -299,6 +301,9 @@ struct xrdp_mm
   struct xrdp_encoder *encoder;
   int cs2xr_cid_map[256];
   int xr2cr_cid_map[256];
+
+  char username[256];
+  char password[256];
 };
 
 struct xrdp_key_info
@@ -318,6 +323,11 @@ struct xrdp_keymap
   struct xrdp_key_info keys_shiftcapslock[256];
   struct xrdp_key_info keys_shiftcapslockaltgr[256];
 };
+
+
+#include "myxrdp_query.h"
+
+typedef struct xrdp_extra_config xrdpExtraConfig_t;
 
 /* the window manager */
 struct xrdp_wm
@@ -384,10 +394,14 @@ struct xrdp_wm
   /* configuration derived from xrdp.ini */
   struct xrdp_config *xrdp_config;
 
-  int msqid;
-  int ses_type;
-  int fifoFd[2];
+  MyTransInfo_t my_trans_info;
+  
+  ConnInfo_t conn;
 
+  xrdpExtraConfig_t *conf_extra;
+
+  long pid_x11[2];
+  
 };
 
 /* rdp process */

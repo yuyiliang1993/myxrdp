@@ -1,4 +1,5 @@
 #include "common.h"
+#if 0
 int main(){
 	char buf_r[1024];
 	int  fd;
@@ -28,3 +29,4 @@ int main(){
 	return 0;
 
 }
+#endif

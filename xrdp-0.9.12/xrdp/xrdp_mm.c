@@ -22,6 +22,8 @@
 #include <config_ac.h>
 #endif
 #include "xrdp.h"
+#include "myxrdp.h"
+
 #include "log.h"
 
 #ifndef USE_NOPAM
@@ -74,6 +76,7 @@ xrdp_mm_create(struct xrdp_wm *owner)
 
     self->encoder = xrdp_encoder_create(self);
 
+	self->username[0]=self->password[0];
     return self;
 }
 
@@ -156,6 +159,9 @@ xrdp_mm_delete(struct xrdp_mm *self)
     self->sesman_trans_up = 0;
     list_delete(self->login_names);
     list_delete(self->login_values);
+	if(g_strlen(self->username) > 0){
+		extra_returnUserInfoToPool(self->wm->conf_extra,self->username, self->password);
+	}
     g_free(self);
 }
 

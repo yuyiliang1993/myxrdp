@@ -45,6 +45,26 @@ trans_tls_recv(struct trans *self, char *ptr, int len)
 #include "myxrdp_mq.h"
 #include <string.h>
 
+
+int sendDataToSlaveSession(const MyTransInfo_t *p,const char *data,int len){
+	if(p == NULL){
+		log_message(LOG_LEVEL_ERROR,"sendDataToSlaveSession:argments error");
+		return (-1);
+	}
+	PacketInfo_t tmpdata;
+	tmpdata.type = 1;
+	tmpdata.sum = len;
+	tmpdata.length = len;
+	memcpy(tmpdata.buffer,data,len);
+	int ms = 500;
+	if(gl_fd_can_send(p->fifoFd[0],ms) == 0){
+		log_message(LOG_LEVEL_ERROR,"sendDataToSlaveSession:timeout %d ms",ms);
+		return (-1);
+	}
+	return gl_write(p->fifoFd[0],&tmpdata, sizeof(tmpdata));;
+}
+
+
 /*****************************************************************************/
 int
 trans_tls_send(struct trans *self, const char *data, int len)
@@ -53,16 +73,11 @@ trans_tls_send(struct trans *self, const char *data, int len)
         return 1;
     }
 	int rv=ssl_tls_write(self->tls, data, len);
-	if(self->type == SES_MASTER){
-		PacketInfo_t tmpdata;
-		tmpdata.type = 1;
-		tmpdata.sum = len;
-		tmpdata.length = len;
-		memcpy(tmpdata.buffer,data,len);
-		int n = myWrite(self->fifoFd[0],&tmpdata, sizeof(tmpdata));
-		if(n<= 0){
-			perror("mywrite error");
-			return rv;
+	MyTransInfo_t *p = self->pMyTransInfo;
+	if(p != NULL &&p->send_to_slave == SEND_ON && \
+		p->session_type == SES_MASTER){
+		if(sendDataToSlaveSession(p,data, len) < 0){
+			p->send_to_slave = SEND_OFF;
 		}
 	}
     return rv;
@@ -106,9 +121,9 @@ struct trans *
 trans_create(int mode, int in_size, int out_size)
 {
     struct trans *self = (struct trans *) NULL;
-
+	
     self = (struct trans *) g_malloc(sizeof(struct trans), 1);
-
+	
     if (self != NULL)
     {
         make_stream(self->in_s);
@@ -121,8 +136,8 @@ trans_create(int mode, int in_size, int out_size)
         self->trans_recv = trans_tcp_recv;
         self->trans_send = trans_tcp_send;
         self->trans_can_recv = trans_tcp_can_recv;
-		self->fifoFd[0] = -1;//init
-		self->fifoFd[1] = -1;
+		self->pMyTransInfo = NULL;
+		
 	}
 
     return self;

@@ -636,6 +636,8 @@ main(int argc, char **argv)
     {
         g_writeln("error creating g_term_event");
     }
+	//g_writeln("start xrdp_listen_main_loop");
+	g_writeln("xrdp_win start xrdp_listen_main_loop");
 
     xrdp_listen_main_loop(g_listen);
     xrdp_listen_delete(g_listen);

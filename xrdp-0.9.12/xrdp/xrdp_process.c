@@ -23,6 +23,7 @@
 #endif
 
 #include "xrdp.h"
+#include "myxrdp.h"
 
 static int g_session_id = 0;
 
@@ -216,7 +217,7 @@ xrdp_process_data_in(struct trans *self)
 }
 
 #include <stdio.h>
-#include "myxrdp_mq.h"
+//#include "myxrdp_mq.h"
 
 
 
@@ -254,8 +255,6 @@ xrdp_process_main_loop(struct xrdp_process *self)
 
         term_obj = g_get_term_event();
         cont = 1;
-	//	struct msgType tmpdata;
-
         while (cont)
         {
             /* build the wait obj list */
@@ -265,23 +264,17 @@ xrdp_process_main_loop(struct xrdp_process *self)
             robjs[robjs_count++] = term_obj;
             robjs[robjs_count++] = self->self_term_event;
 
-			if(self->wm && self->wm->ses_type==SES_SLAVE && self->wm->session){
-				if(self->wm->session->trans){
-					//slave session recv fd
-					robjs[robjs_count++] = self->wm->session->trans->fifoFd[0];
-				}
-			}
+			//add by yuliang
+			//set fifo fd to robjs
+			myxrdp_set_wait_objs(self->wm,robjs,&robjs_count);
 			
-
             xrdp_wm_get_wait_objs(self->wm, robjs, &robjs_count,
                                   wobjs, &wobjs_count, &timeout);
             trans_get_wait_objs_rw(self->server_trans, robjs, &robjs_count,
                                    wobjs, &wobjs_count, &timeout);
-
-			/* wait */
+						/* wait */
             if (g_obj_wait(robjs, robjs_count, wobjs, wobjs_count, timeout) != 0)
             {
-            	printf("g_obj_wait\n");
                 /* error, should not get here */
                 g_sleep(100);
             }
@@ -296,21 +289,24 @@ xrdp_process_main_loop(struct xrdp_process *self)
                 break;
             }
 		
-            if (xrdp_wm_check_wait_objs(self->wm) != 0)
-            {
+            if (xrdp_wm_check_wait_objs(self->wm) != 0){
+            //	log_message(LOG_LEVEL_ERROR,"xrdp_wm_check_wait_objs break");
                 break;
             }
+			
+            if (trans_check_wait_objs(self->server_trans) != 0){
+                break;
+            }
+			
 			if(myxrdp_read_fifo_data(self->wm) != 0){
 				break;
 			}
-
-            if (trans_check_wait_objs(self->server_trans) != 0)
-            {
-                break;
-            }
+			
         }
-        /* send disconnect message if possible */
+		//g_writeln("xrdp_process_main_loop: breaked");
+		/* send disconnect message if possible */
         libxrdp_disconnect(self->session);
+		//g_writeln("libxrdp_disconnect");
     }
     else
     {
@@ -319,6 +315,9 @@ xrdp_process_main_loop(struct xrdp_process *self)
            maybe should check that connection got far enough */
         libxrdp_disconnect(self->session);
     }
+	
+	//g_writeln("Run end in module");
+	
     /* Run end in module */
     xrdp_process_mod_end(self);
     libxrdp_exit(self->session);

@@ -90,10 +90,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_append_compile_flags.m4 \
 	$(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/ax_gcc_func_attribute.m4 \
 	$(top_srcdir)/m4/ax_require_defined.m4 \
-	$(top_srcdir)/m4/ax_type_socklen_t.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/ax_type_socklen_t.m4 $(top_srcdir)/m4/pkg.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -138,11 +135,12 @@ am__libcommon_la_SOURCES_DIST = arch.h base64.h base64.c defines.h \
 	log.c log.h os_calls.c os_calls.h parse.h rail.h ssl_calls.c \
 	ssl_calls.h thread_calls.c thread_calls.h trans.c trans.h \
 	myxrdp_mq.h myxrdp_mq.c myxrdp_common.h myxrdp_common.c \
-	pixman-region16.c pixman-region.h
+	myxrdp_cjson.c myxrdp_cjson.h pixman-region16.c \
+	pixman-region.h
 am__objects_1 = pixman-region16.lo
 am_libcommon_la_OBJECTS = base64.lo fifo.lo file.lo list.lo list16.lo \
 	log.lo os_calls.lo ssl_calls.lo thread_calls.lo trans.lo \
-	myxrdp_mq.lo myxrdp_common.lo $(am__objects_1)
+	myxrdp_mq.lo myxrdp_common.lo myxrdp_cjson.lo $(am__objects_1)
 libcommon_la_OBJECTS = $(am_libcommon_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -401,6 +399,8 @@ libcommon_la_SOURCES = \
   myxrdp_mq.c\
   myxrdp_common.h\
   myxrdp_common.c\
+  myxrdp_cjson.c\
+  myxrdp_cjson.h\
   $(PIXMAN_SOURCES)
 
 libcommon_la_LIBADD = \
@@ -493,6 +493,7 @@ include ./$(DEPDIR)/file.Plo
 include ./$(DEPDIR)/list.Plo
 include ./$(DEPDIR)/list16.Plo
 include ./$(DEPDIR)/log.Plo
+include ./$(DEPDIR)/myxrdp_cjson.Plo
 include ./$(DEPDIR)/myxrdp_common.Plo
 include ./$(DEPDIR)/myxrdp_mq.Plo
 include ./$(DEPDIR)/os_calls.Plo

@@ -297,61 +297,61 @@ configure:7572: $? = 0
 configure:7572: result: yes
 configure:7778: checking for objdir
 configure:7793: result: .libs
-configure:8064: checking if gcc supports -fno-rtti -fno-exceptions
-configure:8082: gcc -c -g -O2  -fno-rtti -fno-exceptions conftest.c >&5
+configure:8060: checking if gcc supports -fno-rtti -fno-exceptions
+configure:8078: gcc -c -g -O2  -fno-rtti -fno-exceptions conftest.c >&5
 cc1: warning: command line option '-fno-rtti' is valid for C++/ObjC++ but not for C [enabled by default]
-configure:8086: $? = 0
-configure:8099: result: no
-configure:8426: checking for gcc option to produce PIC
-configure:8433: result: -fPIC -DPIC
-configure:8441: checking if gcc PIC flag -fPIC -DPIC works
-configure:8459: gcc -c -g -O2  -fPIC -DPIC -DPIC conftest.c >&5
-configure:8463: $? = 0
-configure:8476: result: yes
-configure:8505: checking if gcc static flag -static works
-configure:8533: result: no
-configure:8548: checking if gcc supports -c -o file.o
-configure:8569: gcc -c -g -O2  -o out/conftest2.o conftest.c >&5
-configure:8573: $? = 0
-configure:8595: result: yes
-configure:8603: checking if gcc supports -c -o file.o
-configure:8650: result: yes
-configure:8683: checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries
-configure:9836: result: yes
-configure:9873: checking whether -lc should be explicitly linked in
-configure:9881: gcc -c -g -O2  conftest.c >&5
-configure:9884: $? = 0
-configure:9899: gcc -shared  -fPIC -DPIC conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| /usr/bin/grep  -lc  \>/dev/null 2\>\&1
-configure:9902: $? = 0
-configure:9916: result: no
-configure:10076: checking dynamic linker characteristics
-configure:10587: gcc -o conftest -g -O2   -Wl,-rpath -Wl,/foo conftest.c  >&5
-configure:10587: $? = 0
-configure:10813: result: GNU/Linux ld.so
-configure:10920: checking how to hardcode library paths into programs
-configure:10945: result: immediate
-configure:11485: checking whether stripping libraries is possible
-configure:11490: result: yes
-configure:11525: checking if libtool supports shared libraries
-configure:11527: result: yes
-configure:11530: checking whether to build shared libraries
-configure:11551: result: yes
-configure:11554: checking whether to build static libraries
-configure:11558: result: yes
-configure:11650: checking for pkg-config
-configure:11668: found /usr/bin/pkg-config
-configure:11680: result: /usr/bin/pkg-config
-configure:11705: checking pkg-config is at least version 0.9.0
-configure:11708: result: yes
-configure:11737: checking whether make supports nested variables
-configure:11754: result: yes
-configure:11772: checking CFLAGS for maximum warnings
-configure:11792: gcc -c -g -O2 -warn all  -warn all  conftest.c >&5
+configure:8082: $? = 0
+configure:8095: result: no
+configure:8422: checking for gcc option to produce PIC
+configure:8429: result: -fPIC -DPIC
+configure:8437: checking if gcc PIC flag -fPIC -DPIC works
+configure:8455: gcc -c -g -O2  -fPIC -DPIC -DPIC conftest.c >&5
+configure:8459: $? = 0
+configure:8472: result: yes
+configure:8501: checking if gcc static flag -static works
+configure:8529: result: no
+configure:8544: checking if gcc supports -c -o file.o
+configure:8565: gcc -c -g -O2  -o out/conftest2.o conftest.c >&5
+configure:8569: $? = 0
+configure:8591: result: yes
+configure:8599: checking if gcc supports -c -o file.o
+configure:8646: result: yes
+configure:8679: checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries
+configure:9832: result: yes
+configure:9869: checking whether -lc should be explicitly linked in
+configure:9877: gcc -c -g -O2  conftest.c >&5
+configure:9880: $? = 0
+configure:9895: gcc -shared  -fPIC -DPIC conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| /usr/bin/grep  -lc  \>/dev/null 2\>\&1
+configure:9898: $? = 0
+configure:9912: result: no
+configure:10072: checking dynamic linker characteristics
+configure:10583: gcc -o conftest -g -O2   -Wl,-rpath -Wl,/foo conftest.c  >&5
+configure:10583: $? = 0
+configure:10809: result: GNU/Linux ld.so
+configure:10916: checking how to hardcode library paths into programs
+configure:10941: result: immediate
+configure:11481: checking whether stripping libraries is possible
+configure:11486: result: yes
+configure:11521: checking if libtool supports shared libraries
+configure:11523: result: yes
+configure:11526: checking whether to build shared libraries
+configure:11547: result: yes
+configure:11550: checking whether to build static libraries
+configure:11554: result: yes
+configure:11646: checking for pkg-config
+configure:11664: found /usr/bin/pkg-config
+configure:11676: result: /usr/bin/pkg-config
+configure:11701: checking pkg-config is at least version 0.9.0
+configure:11704: result: yes
+configure:11733: checking whether make supports nested variables
+configure:11750: result: yes
+configure:11768: checking CFLAGS for maximum warnings
+configure:11788: gcc -c -g -O2 -warn all  -warn all  conftest.c >&5
 gcc: error: all: No such file or directory
 gcc: error: all: No such file or directory
 gcc: error: unrecognized command line option '-warn'
 gcc: error: unrecognized command line option '-warn'
-configure:11792: $? = 1
+configure:11788: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "xrdp"
@@ -383,31 +383,31 @@ configure: failed program was:
 |   ;
 |   return 0;
 | }
-configure:11792: gcc -c -g -O2 -pedantic  -Wall  conftest.c >&5
-configure:11792: $? = 0
-configure:11800: result: -Wall
-configure:11820: : CFLAGS="$CFLAGS"
-configure:11823: $? = 0
-configure:11854: checking whether C compiler accepts -Wwrite-strings
-configure:11873: gcc -c -g -O2 -Wall  -Wwrite-strings  conftest.c >&5
-configure:11873: $? = 0
-configure:11882: result: yes
-configure:11898: : CFLAGS="$CFLAGS"
-configure:11901: $? = 0
-configure:11926: checking for __attribute__((format))
-configure:11947: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-configure:11947: $? = 0
-configure:11960: result: yes
-configure:11973: checking for socklen_t
-configure:11991: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
-configure:11991: $? = 0
-configure:11999: result: yes
-configure:12401: checking for dlopen
-configure:12401: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-/tmp/cc2QvnNb.o: In function `main':
+configure:11788: gcc -c -g -O2 -pedantic  -Wall  conftest.c >&5
+configure:11788: $? = 0
+configure:11796: result: -Wall
+configure:11816: : CFLAGS="$CFLAGS"
+configure:11819: $? = 0
+configure:11850: checking whether C compiler accepts -Wwrite-strings
+configure:11869: gcc -c -g -O2 -Wall  -Wwrite-strings  conftest.c >&5
+configure:11869: $? = 0
+configure:11878: result: yes
+configure:11894: : CFLAGS="$CFLAGS"
+configure:11897: $? = 0
+configure:11922: checking for __attribute__((format))
+configure:11943: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+configure:11943: $? = 0
+configure:11956: result: yes
+configure:11969: checking for socklen_t
+configure:11987: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
+configure:11987: $? = 0
+configure:11995: result: yes
+configure:12397: checking for dlopen
+configure:12397: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+/tmp/cct6pZ7Q.o: In function `main':
 /home/workroom1/myxrdp/xrdp-0.9.12/conftest.c:58: undefined reference to `dlopen'
 collect2: error: ld returned 1 exit status
-configure:12401: $? = 1
+configure:12397: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "xrdp"
@@ -470,37 +470,37 @@ configure: failed program was:
 |   ;
 |   return 0;
 | }
-configure:12401: result: no
-configure:12405: checking for dlopen in -ldl
-configure:12430: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -ldl   >&5
-configure:12430: $? = 0
-configure:12439: result: yes
-configure:12452: checking for OPENSSL
-configure:12459: $PKG_CONFIG --exists --print-errors "openssl >= 0.9.8"
-configure:12462: $? = 0
-configure:12476: $PKG_CONFIG --exists --print-errors "openssl >= 0.9.8"
-configure:12479: $? = 0
-configure:12517: result: yes
-configure:12528: checking for openssl
-configure:12547: found /usr/bin/openssl
-configure:12559: result: /usr/bin/openssl
-configure:12576: checking security/_pam_types.h usability
-configure:12576: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
-configure:12576: $? = 0
-configure:12576: result: yes
-configure:12576: checking security/_pam_types.h presence
-configure:12576: gcc -E  conftest.c
-configure:12576: $? = 0
-configure:12576: result: yes
-configure:12576: checking for security/_pam_types.h
-configure:12576: result: yes
-configure:12584: checking security/pam_constants.h usability
-configure:12584: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
+configure:12397: result: no
+configure:12401: checking for dlopen in -ldl
+configure:12426: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -ldl   >&5
+configure:12426: $? = 0
+configure:12435: result: yes
+configure:12448: checking for OPENSSL
+configure:12455: $PKG_CONFIG --exists --print-errors "openssl >= 0.9.8"
+configure:12458: $? = 0
+configure:12472: $PKG_CONFIG --exists --print-errors "openssl >= 0.9.8"
+configure:12475: $? = 0
+configure:12513: result: yes
+configure:12524: checking for openssl
+configure:12543: found /usr/bin/openssl
+configure:12555: result: /usr/bin/openssl
+configure:12572: checking security/_pam_types.h usability
+configure:12572: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
+configure:12572: $? = 0
+configure:12572: result: yes
+configure:12572: checking security/_pam_types.h presence
+configure:12572: gcc -E  conftest.c
+configure:12572: $? = 0
+configure:12572: result: yes
+configure:12572: checking for security/_pam_types.h
+configure:12572: result: yes
+configure:12580: checking security/pam_constants.h usability
+configure:12580: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
 conftest.c:58:36: fatal error: security/pam_constants.h: No such file or directory
  #include <security/pam_constants.h>
                                     ^
 compilation terminated.
-configure:12584: $? = 1
+configure:12580: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "xrdp"
@@ -560,14 +560,14 @@ configure: failed program was:
 | # include <unistd.h>
 | #endif
 | #include <security/pam_constants.h>
-configure:12584: result: no
-configure:12584: checking security/pam_constants.h presence
-configure:12584: gcc -E  conftest.c
+configure:12580: result: no
+configure:12580: checking security/pam_constants.h presence
+configure:12580: gcc -E  conftest.c
 conftest.c:25:36: fatal error: security/pam_constants.h: No such file or directory
  #include <security/pam_constants.h>
                                     ^
 compilation terminated.
-configure:12584: $? = 1
+configure:12580: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "xrdp"
@@ -594,54 +594,54 @@ configure: failed program was:
 | #define HAVE__PAM_TYPES_H 1
 | /* end confdefs.h.  */
 | #include <security/pam_constants.h>
-configure:12584: result: no
-configure:12584: checking for security/pam_constants.h
-configure:12584: result: no
-configure:12600: checking security/pam_appl.h usability
-configure:12600: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
-configure:12600: $? = 0
-configure:12600: result: yes
-configure:12600: checking security/pam_appl.h presence
-configure:12600: gcc -E  conftest.c
-configure:12600: $? = 0
-configure:12600: result: yes
-configure:12600: checking for security/pam_appl.h
-configure:12600: result: yes
-configure:12670: checking for FREERDP
-configure:12677: $PKG_CONFIG --exists --print-errors "freerdp >= 1.0.0"
-configure:12680: $? = 0
-configure:12694: $PKG_CONFIG --exists --print-errors "freerdp >= 1.0.0"
-configure:12697: $? = 0
-configure:12755: result: yes
-configure:13102: checking for X
-configure:13210: gcc -E  conftest.c
-configure:13210: $? = 0
-configure:13241: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -lX11  >&5
-configure:13241: $? = 0
-configure:13291: result: libraries , headers 
-configure:13390: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c   -lX11 >&5
-configure:13390: $? = 0
-configure:13488: checking for gethostbyname
-configure:13488: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-configure:13488: $? = 0
-configure:13488: result: yes
-configure:13585: checking for connect
-configure:13585: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-configure:13585: $? = 0
-configure:13585: result: yes
-configure:13634: checking for remove
-configure:13634: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-configure:13634: $? = 0
-configure:13634: result: yes
-configure:13683: checking for shmat
-configure:13683: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
-configure:13683: $? = 0
-configure:13683: result: yes
-configure:13741: checking for IceConnectionNumber in -lICE
-configure:13766: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -lICE   >&5
+configure:12580: result: no
+configure:12580: checking for security/pam_constants.h
+configure:12580: result: no
+configure:12596: checking security/pam_appl.h usability
+configure:12596: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
+configure:12596: $? = 0
+configure:12596: result: yes
+configure:12596: checking security/pam_appl.h presence
+configure:12596: gcc -E  conftest.c
+configure:12596: $? = 0
+configure:12596: result: yes
+configure:12596: checking for security/pam_appl.h
+configure:12596: result: yes
+configure:12666: checking for FREERDP
+configure:12673: $PKG_CONFIG --exists --print-errors "freerdp >= 1.0.0"
+configure:12676: $? = 0
+configure:12690: $PKG_CONFIG --exists --print-errors "freerdp >= 1.0.0"
+configure:12693: $? = 0
+configure:12751: result: yes
+configure:13098: checking for X
+configure:13206: gcc -E  conftest.c
+configure:13206: $? = 0
+configure:13237: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -lX11  >&5
+configure:13237: $? = 0
+configure:13287: result: libraries , headers 
+configure:13386: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c   -lX11 >&5
+configure:13386: $? = 0
+configure:13484: checking for gethostbyname
+configure:13484: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+configure:13484: $? = 0
+configure:13484: result: yes
+configure:13581: checking for connect
+configure:13581: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+configure:13581: $? = 0
+configure:13581: result: yes
+configure:13630: checking for remove
+configure:13630: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+configure:13630: $? = 0
+configure:13630: result: yes
+configure:13679: checking for shmat
+configure:13679: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c  >&5
+configure:13679: $? = 0
+configure:13679: result: yes
+configure:13737: checking for IceConnectionNumber in -lICE
+configure:13762: gcc -o conftest -g -O2 -Wall -Wwrite-strings   conftest.c -lICE   >&5
 /usr/bin/ld: cannot find -lICE
 collect2: error: ld returned 1 exit status
-configure:13766: $? = 1
+configure:13762: $? = 1
 configure: failed program was:
 | /* confdefs.h */
 | #define PACKAGE_NAME "xrdp"
@@ -682,28 +682,28 @@ configure: failed program was:
 |   ;
 |   return 0;
 | }
-configure:13775: result: no
-configure:13793: checking for X11/extensions/Xfixes.h
-configure:13793: gcc -c -g -O2 -Wall -Wwrite-strings   conftest.c >&5
-configure:13793: $? = 0
-configure:13793: result: yes
-configure:13804: checking for X11/extensions/Xrandr.h
-configure:13804: gcc -c -g -O2 -Wall -Wwrite-strings   conftest.c >&5
-configure:13804: $? = 0
-configure:13804: result: yes
-configure:13850: checking sys/prctl.h usability
-configure:13850: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
-configure:13850: $? = 0
-configure:13850: result: yes
-configure:13850: checking sys/prctl.h presence
-configure:13850: gcc -E  conftest.c
-configure:13850: $? = 0
-configure:13850: result: yes
-configure:13850: checking for sys/prctl.h
-configure:13850: result: yes
-configure:13973: checking that generated files are newer than configure
-configure:13979: result: done
-configure:14094: creating ./config.status
+configure:13771: result: no
+configure:13789: checking for X11/extensions/Xfixes.h
+configure:13789: gcc -c -g -O2 -Wall -Wwrite-strings   conftest.c >&5
+configure:13789: $? = 0
+configure:13789: result: yes
+configure:13800: checking for X11/extensions/Xrandr.h
+configure:13800: gcc -c -g -O2 -Wall -Wwrite-strings   conftest.c >&5
+configure:13800: $? = 0
+configure:13800: result: yes
+configure:13846: checking sys/prctl.h usability
+configure:13846: gcc -c -g -O2 -Wall -Wwrite-strings  conftest.c >&5
+configure:13846: $? = 0
+configure:13846: result: yes
+configure:13846: checking sys/prctl.h presence
+configure:13846: gcc -E  conftest.c
+configure:13846: $? = 0
+configure:13846: result: yes
+configure:13846: checking for sys/prctl.h
+configure:13846: result: yes
+configure:13969: checking that generated files are newer than configure
+configure:13975: result: done
+configure:14090: creating ./config.status
 
 ## ---------------------- ##
 ## Running config.status. ##
@@ -751,10 +751,10 @@ config.status:1183: creating config_ac.h
 config.status:1364: config_ac.h is unchanged
 config.status:1412: executing depfiles commands
 config.status:1412: executing libtool commands
-configure:16410: === configuring in libpainter (/home/workroom1/myxrdp/xrdp-0.9.12/libpainter)
-configure:16473: running /bin/sh ./configure --disable-option-checking '--prefix=/usr/local'  '--enable-neutrinordp' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' --cache-file=/dev/null --srcdir=.
-configure:16410: === configuring in librfxcodec (/home/workroom1/myxrdp/xrdp-0.9.12/librfxcodec)
-configure:16473: running /bin/sh ./configure --disable-option-checking '--prefix=/usr/local'  '--enable-neutrinordp' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' --cache-file=/dev/null --srcdir=.
+configure:16406: === configuring in libpainter (/home/workroom1/myxrdp/xrdp-0.9.12/libpainter)
+configure:16469: running /bin/sh ./configure --disable-option-checking '--prefix=/usr/local'  '--enable-neutrinordp' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' --cache-file=/dev/null --srcdir=.
+configure:16406: === configuring in librfxcodec (/home/workroom1/myxrdp/xrdp-0.9.12/librfxcodec)
+configure:16469: running /bin/sh ./configure --disable-option-checking '--prefix=/usr/local'  '--enable-neutrinordp' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' --cache-file=/dev/null --srcdir=.
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -1116,3 +1116,21 @@ target_alias=''
 #define HAVE_SYS_PRCTL_H 1
 
 configure: exit 0
+
+## ---------------------- ##
+## Running config.status. ##
+## ---------------------- ##
+
+This file was extended by xrdp config.status 0.9.12, which was
+generated by GNU Autoconf 2.69.  Invocation command line was
+
+  CONFIG_FILES    = 
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  $ ./config.status xrdp/Makefile depfiles
+
+on localhost.localdomain
+
+config.status:1183: creating xrdp/Makefile
+config.status:1412: executing depfiles commands

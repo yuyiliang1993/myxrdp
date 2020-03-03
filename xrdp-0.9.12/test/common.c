@@ -1,8 +1,16 @@
 #include "common.h"
+#if 0
+int isFileExisted(const char *pathname){
+	if(access(pathname,F_OK) == 0){
+		return true;
+	}
+	return false;
+}
+
 void makeDirectory(const char *path){
 	if((strcmp(path,".") == 0) || (strcmp(path,"/")==0))
 		return ;
-	if(access(path,F_OK) == 0)
+	if(isFileExisted(path))
 		return ;
 	else{
 		char *duppath = strdup(path);
@@ -31,12 +39,6 @@ int createFile(const char*filename,int mode){
 	return true;
 }
 
-int isFileExisted(const char *pathname){
-	if(access(pathname,F_OK) == 0){
-		return true;
-	}
-	return false;
-}
 
 int isFileNull(const char *filename){
 	FILE *fp = fopen(filename,"r");
@@ -96,7 +98,7 @@ int create_fifo(const char *path){
 }
 
 int open_fifo(const char *pathname,int mode){
-	int fd=open(pathname,mode);
+	int fd = open(pathname,mode);
 	if(fd==-1){
 		perror("open");
 		return (-1);	
@@ -166,7 +168,6 @@ void test_getSessionType(){
 	printf("ret:%d\n",ret);
 }
 
-#if 0
 int main(int argc,char *argv[]){
 
 	test_getSessionType();
