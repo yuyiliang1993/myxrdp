@@ -1,9 +1,0 @@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@libdir@
-includedir=@includedir@
-
-Name: xrdp
-Description: An open source Remote Desktop Protocol (RDP) server
-Version: @VERSION@
-Cflags: -I${includedir}

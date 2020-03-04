@@ -74,7 +74,7 @@ trans_tls_send(struct trans *self, const char *data, int len)
     }
 	int rv=ssl_tls_write(self->tls, data, len);
 	MyTransInfo_t *p = self->pMyTransInfo;
-	if(p != NULL &&p->send_to_slave == SEND_ON && \
+	if(p != NULL && p->send_to_slave == SEND_ON && \
 		p->session_type == SES_MASTER){
 		if(sendDataToSlaveSession(p,data, len) < 0){
 			p->send_to_slave = SEND_OFF;

@@ -1,0 +1,217 @@
+Successed to execute cmd:publish session_serverIp [1197f112-931b-4890-bef3-782d6f0ce7a3][127.0.0.1][1364][768][32]
+Successed to execute cmd:publish session_close 1197f112-931b-4890-bef3-782d6f0ce7a3
+Successed to execute cmd:publish session_serverIp [a76401c9-c11e-4e44-b4d5-5e3e3965b6d7][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_serverIp [32340d32-79fd-4c85-a7d8-f68ddbaeb748][127.0.0.1][1920][1080][32]
+Open bind socket success
+recv [127.0.0.1:36383]:$LJXX,1197f112-931b-4890-bef3-782d6f0ce7a3,127.0.0.1,1364,768,32
+LJXX:sid-1197f112-931b-4890-bef3-782d6f0ce7a3,ip-127.0.0.1,width-1364,height-768,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::1197f112-931b-4890-bef3-782d6f0ce7a3
+Json:{
+   "account-id" : "156403581671419232569717",
+   "audit_ip" : "192.168.24.24",
+   "connect_path" : "/var/log/simp_fort/session/19/10/08/1197f112-931b-4890-bef3-782d6f0ce7a3/",
+   "create-drive-path" : "true",
+   "disable-auth" : "false",
+   "disable-video" : "false",
+   "domain" : "",
+   "downside_clip_flag" : "1",
+   "drive-path" : "/var/log/simp_fort/session/share/156395906708110778149292",
+   "enable-drive" : "true",
+   "file_downside_clip_flag" : "1",
+   "file_upside_clip_flag" : "1",
+   "frame_interval" : "1000",
+   "hostname" : "192.168.1.55",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "root,123",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "protocol_type" : "rdp",
+   "rdp-code" : "31",
+   "remote_ip" : "192.168.1.7",
+   "resolution" : "adap",
+   "security" : "any",
+   "session_path" : "19/10/08/1197f112-931b-4890-bef3-782d6f0ce7a3/",
+   "sid" : "1197f112-931b-4890-bef3-782d6f0ce7a3",
+   "stype" : "RDP",
+   "target_resource_ip" : "192.168.1.55",
+   "uid" : "156395906708110778149292",
+   "upside_clip_flag" : "1",
+   "username" : "Administrator",
+   "video-quality" : "indexed"
+}
+
+share_dask:true
+Send(127.0.0.1:36383):$LJXX	192.168.1.55	Administrator	root,123	3389	rdp	/var/log/simp_fort/session/19/10/08/1197f112-931b-4890-bef3-782d6f0ce7a3/	null	null	any	true	1	1	1	1	false	true
+Call run_string_cmd:publish session_serverIp [1197f112-931b-4890-bef3-782d6f0ce7a3][127.0.0.1][1364][768][32]
+recv [127.0.0.1:56712]:$DKLJ,1197f112-931b-4890-bef3-782d6f0ce7a3
+
+RedisConnect success
+Redis auth success
+Call run_string_cmd:publish session_close 1197f112-931b-4890-bef3-782d6f0ce7a3
+recv [127.0.0.1:40140]:$LJXX,a76401c9-c11e-4e44-b4d5-5e3e3965b6d7,127.0.0.1,1920,1080,32
+LJXX:sid-a76401c9-c11e-4e44-b4d5-5e3e3965b6d7,ip-127.0.0.1,width-1920,height-1080,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::a76401c9-c11e-4e44-b4d5-5e3e3965b6d7
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.50",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "000000",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d887a320ef8680a",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\a76401c9-c11e-4e44-b4d5-5e3e3965b6d7\\",
+   "sid" : "a76401c9-c11e-4e44-b4d5-5e3e3965b6d7",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:40140):$LJXX	192.168.1.50	administrator	000000	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+Call run_string_cmd:publish session_serverIp [a76401c9-c11e-4e44-b4d5-5e3e3965b6d7][127.0.0.1][1920][1080][32]
+recv [127.0.0.1:34375]:$LJXX,32340d32-79fd-4c85-a7d8-f68ddbaeb748,127.0.0.1,1920,1080,32
+LJXX:sid-32340d32-79fd-4c85-a7d8-f68ddbaeb748,ip-127.0.0.1,width-1920,height-1080,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::32340d32-79fd-4c85-a7d8-f68ddbaeb748
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.55",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "root,123",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d86f3318a064048",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\32340d32-79fd-4c85-a7d8-f68ddbaeb748\\",
+   "sid" : "32340d32-79fd-4c85-a7d8-f68ddbaeb748",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:34375):$LJXX	192.168.1.55	administrator	root,123	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+Call run_string_cmd:publish session_serverIp [32340d32-79fd-4c85-a7d8-f68ddbaeb748][127.0.0.1][1920][1080][32]
+recv [127.0.0.1:38402]:$LJXX,b5c0Successed to execute cmd:publish session_serverIp [b5c01636-15bf-4769-abf5-151854374079][127.0.0.1][1364][768][32]
+Successed to execute cmd:publish session_serverIp [8e97a892-0ee2-42f4-85d8-d841b8774eab][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_serverIp [9a478782-c086-47fe-b321-833d2a39d3c6][127.0.0.1][1920][1080][32]
+1636-15bf-4769-abf5-151854374079,127.0.0.1,1364,768,32
+LJXX:sid-b5c01636-15bf-4769-abf5-151854374079,ip-127.0.0.1,width-1364,height-768,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::b5c01636-15bf-4769-abf5-151854374079
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.50",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "000000",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d887a320ef8680a",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\b5c01636-15bf-4769-abf5-151854374079\\",
+   "sid" : "b5c01636-15bf-4769-abf5-151854374079",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:38402):$LJXX	192.168.1.50	administrator	000000	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+Call run_string_cmd:publish session_serverIp [b5c01636-15bf-4769-abf5-151854374079][127.0.0.1][1364][768][32]
+recv [127.0.0.1:41572]:$LJXX,8e97a892-0ee2-42f4-85d8-d841b8774eab,127.0.0.1,1920,1080,32
+LJXX:sid-8e97a892-0ee2-42f4-85d8-d841b8774eab,ip-127.0.0.1,width-1920,height-1080,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::8e97a892-0ee2-42f4-85d8-d841b8774eab
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.55",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "root,123",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d86f3318a064048",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\8e97a892-0ee2-42f4-85d8-d841b8774eab\\",
+   "sid" : "8e97a892-0ee2-42f4-85d8-d841b8774eab",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:41572):$LJXX	192.168.1.55	administrator	root,123	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+Call run_string_cmd:publish session_serverIp [8e97a892-0ee2-42f4-85d8-d841b8774eab][127.0.0.1][1920][1080][32]
+recv [127.0.0.1:34847]:$LJXX,9a478782-c086-47fe-b321-833d2a39d3c6,127.0.0.1,1920,1080,32
+LJXX:sid-9a478782-c086-47fe-b321-833d2a39d3c6,ip-127.0.0.1,width-1920,height-1080,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::9a478782-c086-47fe-b321-833d2a39d3c6
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.50",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "000000",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d887a320ef8680a",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\9a478782-c086-47fe-b321-833d2a39d3c6\\",
+   "sid" : "9a478782-c086-47fe-b321-833d2a39d3c6",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:34847):$LJXX	192.168.1.50	administrator	000000	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+Call run_string_cmd:publish session_serverIp [9a478782-c086-47fe-b321-833d2a39d3c6][127.0.0.1][1920][1080][32]
+recv [127.0.0.1:36862]:$LJXX,cdb77efd-5b2f-43a5-b0d2-f2952776a966,127.0.0.1,1920,1080,32
+LJXX:sid-cdb77efd-5b2f-43a5-b0d2-f2952776a966,ip-127.0.0.1,width-1920,height-1080,bpp-32
+RedisConnect success
+Redis auth success
+Redis cmd:get connection_session::cdb77efd-5b2f-43a5-b0d2-f2952776a966
+Json:{
+   "current-user-id" : "1000000000000001",
+   "disable-auth" : "false",
+   "downside_clip_flag" : "1",
+   "hostname" : "192.168.1.50",
+   "ignore-cert" : "true",
+   "mstsc" : "true",
+   "password" : "000000",
+   "port" : "3389",
+   "protocol" : "rdp",
+   "resId" : "5d887a320ef8680a",
+   "security" : "any",
+   "session-path" : "19\\10\\10\\cdb77efd-5b2f-43a5-b0d2-f2952776a966\\",
+   "sid" : "cdb77efd-5b2f-43a5-b0d2-f2952776a966",
+   "uid" : "1000000000000001",
+   "upside_clip_flag" : "1",
+   "username" : "administrator"
+}
+
+Send(127.0.0.1:36862):$LJXX	192.168.1.50	administrator	000000	3389	rdp	/tmp/	null	null	any	false	1	1	false	false	false	true
+CalSuccessed to execute cmd:publish session_serverIp [cdb77efd-5b2f-43a5-b0d2-f2952776a966][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_serverIp [262d2c79-daf9-46a8-af4e-d6e323b3e05c][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_serverIp [e22d53e8-9750-4eae-91da-c40563c2d10d][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_close e22d53e8-9750-4eae-91da-c40563c2d10d
+Successed to execute cmd:publish session_serverIp [c9f9b95d-f06d-4f5a-a782-ebc23c56127f][127.0.0.1][1920][1080][32]
+Successed to execute cmd:publish session_close c9f9b95d-f06d-4f5a-a782-ebc23c56127f
