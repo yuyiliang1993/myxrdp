@@ -65,11 +65,29 @@ int gl_write(int fd,const void*data,int size);
 
 int gl_read(int fd,void*data,int size);
 
+int gl_file_append_line(const char*filename,const void *data,int size);
+
+int gl_file_block_lock(const char *filename);
+
+int gl_file_unlock_close(int fd);
 
 typedef struct session_arg{
 	int rdp5_performanceflags;
 	int rdp_compression;
 }session_arg_t;
+
+typedef struct MyTransInfo{
+  int session_type;
+  int fifoFd[2];
+  char filename1[256];
+  char filename2[256];
+  char filename3[256];
+  struct ssl_tls *tls;
+  int conn_status;
+  int send_to_slave;
+}MyTransInfo_t;
+
+
 
 enum data_type{
 	DATA_TYPE_RDP=0x01,
@@ -84,6 +102,11 @@ enum CONN_STAT{
 enum SNED_STAT{
 	SEND_OFF=0x00,
 	SEND_ON=0x01,
+};
+	
+enum WORK_MODE{
+	MODE_DIRECT_MENU=0x01,
+	MODE_PROTOCOL_AGENT,
 };
 
 #endif

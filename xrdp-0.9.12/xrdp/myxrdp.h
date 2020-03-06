@@ -1,5 +1,7 @@
 #ifndef __MY_XRDP_H__
 #define __MY_XRDP_H__
+#include "myxrdp_common.h"
+#include "myxrdp_query.h"
 
 typedef struct MyTransInfo MyTransInfo_t;
 
@@ -14,6 +16,8 @@ void myxrdp_mytrans_init(MyTransInfo_t*p);
 void myxrdp_mytrans_delete(MyTransInfo_t*p);
 
 int myxrdp_conn_manager(struct xrdp_wm *self);
+
+int myxrdp_direct_connect_menu(struct xrdp_wm *self);
 
 enum SessionType;//in myxrdp_common.h
 
@@ -31,6 +35,7 @@ enum SessionType myxrdp_get_session_type(const char *filename);
 #ifndef DIRECT_MENU_FILENAME 
 #define DIRECT_MENU_FILENAME  "/tmp/.directmenu.dat"
 #endif
+
 
 
 typedef struct xrdp_extra_config{
@@ -54,6 +59,7 @@ typedef struct xrdp_extra_config{
 #endif
 
 xrdpExtraConfig_t *extra_cfg_create(void);
+
 void extra_cfg_delete(xrdpExtraConfig_t *cfg);
 
 int extra_getUserInfoFromPool(char * username, char * passwd, const char * ip, int port);
@@ -68,5 +74,12 @@ int extra_process_stop(long pid);
 
 int extra_isFileChanged(const char *filename,long lastModTime,int max_sec);
 
+int extra_read_config(xrdpExtraConfig_t *cfg,const char *filename);
+
+int extra_getDirectMenuTempSidFromFile(char *dstBuf,int size,const char *filename);
+
+long extra_getDirectMenuPidFromFile(const char *filename);
+
+int extra_getSessionIdFromFile(char *dest,int size,const char *filename);
 
 #endif

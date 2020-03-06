@@ -19,8 +19,6 @@
 #include "log.h"
 
 //extra code
-#include "myxrdp_common.h"
-#include "myxrdp_query.h"
 #include "myxrdp.h"
 
 
@@ -30,8 +28,9 @@ void myxrdp_mytrans_init(MyTransInfo_t*p){
 	p->session_type = SES_OTHER;
 	p->tls = NULL;
 	p->conn_status = DISCONNECTED;
-	p->send_to_slave = SEND_OFF;
+	p->send_to_slave = SEND_OFF;	
 }
+
 
 int myxrdp_send_disconnect(MyTransInfo_t *p){
 	if(p == NULL)
@@ -77,6 +76,7 @@ void myxrdp_mytrans_delete(MyTransInfo_t*p){
 	p->session_type = SES_OTHER;
 	p->send_to_slave = SEND_OFF;
 }
+
 
 int myxrdp_set_rdp(	struct xrdp_mm* self)
 {	 
@@ -222,7 +222,8 @@ int myxrdp_master_recv_args(struct xrdp_wm *self,int fd){
 		log_message(LOG_LEVEL_ERROR,"myread session argments failed:%s",strerror(errno));
 		return 1;
 	}
-	#ifdef DEBUG_OUT
+	
+	#ifdef __DEBUG_OUT__
 		log_message(LOG_LEVEL_DEBUG,"master:arg.rdp5_performanceflags:%d",data_arg.rdp5_performanceflags);
 		log_message(LOG_LEVEL_DEBUG,"master:arg.rdp_compression:%d",data_arg.rdp_compression);
 	#endif
@@ -236,7 +237,7 @@ static int myxrdp_slave_send_args(struct xrdp_wm *self,int fd){
 	session_arg_t data_arg;
 	data_arg.rdp5_performanceflags = self->client_info->rdp5_performanceflags;
 	data_arg.rdp_compression = self->client_info->rdp_compression;
-#ifdef DEBUG_OUT
+#ifdef __DEBUG_OUT__
 	log_message(LOG_LEVEL_DEBUG,"slave:arg.rdp5_performanceflags:%d",data_arg.rdp5_performanceflags);
 	log_message(LOG_LEVEL_DEBUG,"slave:arg.rdp_compression:%d",data_arg.rdp_compression);
 #endif
@@ -309,6 +310,64 @@ static int myxrdp_fill_conn_vnc(struct xrdp_mm * self, const ConnInfo_t * conn){
 	list_add_item(self->login_values, (long)g_strdup(conn->port));
 	return 0;
 }
+
+static int myxrdp_fill_conn_xorg(struct xrdp_mm * self){	
+	if(self == NULL)
+		return false;
+	if(self->wm == NULL)
+		return false;
+	if(self->wm->conf_extra->userPoolIp==NULL ||\
+		self->wm->conf_extra->userPoolPort==NULL)
+		return false;
+	if(self->wm->conf_extra->CssProgramName == NULL)
+		return false;
+	
+	//模块动态库libxup.so
+	list_add_item(self->login_names, (long)g_strdup("lib"));
+	list_add_item(self->login_values, (long)g_strdup("libxup.so"));
+	char username[256];
+	char password[256];	
+#if 1
+	//用户名和密码是登陆本地的，需要访问用户池
+	bzero(username,256);
+	bzero(password,256);
+	
+	if(extra_getUserInfoFromPool(username,password,self->wm->conf_extra->userPoolIp,\
+		atoi(self->wm->conf_extra->userPoolPort)) == false){
+		log_message(LOG_LEVEL_ERROR,"GetUserInfoFromPool failed:%s/%s",\
+			self->wm->conf_extra->userPoolIp,self->wm->conf_extra->userPoolPort);
+		return false;
+	}
+		
+	log_message(LOG_LEVEL_DEBUG,"GET USER :%s,%s",username,password);
+	memcpy(self->username,username,strlen(username));
+	memcpy(self->password,password,strlen(password));	
+#endif
+
+	list_add_item(self->login_names, (long)g_strdup("ip"));
+	list_add_item(self->login_values, (long)g_strdup("127.0.0.1"));
+
+	list_add_item(self->login_names, (long)g_strdup("port"));
+	list_add_item(self->login_values, (long)g_strdup("-1"));
+
+	list_add_item(self->login_names, (long)g_strdup("username"));
+	list_add_item(self->login_values, (long)g_strdup(username));
+
+	list_add_item(self->login_names, (long)g_strdup("password"));
+	list_add_item(self->login_values, (long)g_strdup(password));
+
+	list_add_item(self->login_names, (long)g_strdup("code"));
+	list_add_item(self->login_values, (long)g_strdup("20"));
+	if(self->wm &&self->wm->client_info){
+		char *pbuf = self->wm->client_info->program; ///usr/bin/testx11.sh 
+		snprintf(pbuf,sizeof(self->wm->client_info->program),\
+		self->wm->conf_extra->CssProgramName);
+	}
+
+	g_strlen(self->wm->client_info->program);	
+	return true;
+}
+
 
 static int myxrdp_fill_conn_x11(struct xrdp_mm * self, const ConnInfo_t * conn){
 	if(self == NULL||conn==NULL)
@@ -392,7 +451,7 @@ static int myxrdp_connect_dest(struct xrdp_wm *self){
 	ConnInfo_t *conn = &self->conn;
 	const char *x11_ssid_filename = X11_SSID_FILENAME;
 	long lastModTime = 0L;
-	sem_t *sem = NULL;
+	int lockfd = -1;
 	if(g_strcmp(conn->protocol,"rdp") == 0){
 		if(myxrdp_fill_conn_rdp(self->mm, conn) < 0){
 			log_message(LOG_LEVEL_ERROR,"set_connect_info_rdp failed");
@@ -413,23 +472,15 @@ static int myxrdp_connect_dest(struct xrdp_wm *self){
 		char *ssid = self->session->client_info->username;
 		int width = self->session->client_info->width;
 		int height = self->session->client_info->height;
-		//枷锁
-		sem = sem_open(SEM_X11_NAME,O_CREAT,0666,1);
-		if(sem == NULL){
-			log_message(LOG_LEVEL_ERROR,"sem_open failed:%s",strerror(errno));
-			return 1;
-		}
-		int val=0;
-    	sem_getvalue(sem, &val);
-		//if val == 1,first create
-		if(val <= 0){
-			sem_wait(sem);
-		}
+		//阻塞加锁
+		lockfd = gl_file_block_lock("x11share.lock");
 		myxrdp_writeSessionIdToFile(ssid,width,height,x11_ssid_filename);
 		lastModTime = extra_getLastModTime(x11_ssid_filename);		
 	}
-	self->my_trans_info.send_to_slave = SEND_ON;
+	
+	
 	int rv = 0;
+	self->my_trans_info.send_to_slave = SEND_ON;
 	if (xrdp_mm_connect(self->mm) == 0){		
 		xrdp_wm_set_login_mode(self, 3);
 		xrdp_wm_delete_all_children(self);
@@ -437,21 +488,18 @@ static int myxrdp_connect_dest(struct xrdp_wm *self){
 	}else {
 		rv = 1;
 		self->my_trans_info.send_to_slave = SEND_OFF;
+		log_message(LOG_LEVEL_DEBUG,"Connnect failed protocol:%s ",conn->protocol);
 	}
-
-	if(strcmp(conn->protocol,"x11") == 0){
+	if(g_strcmp(conn->protocol,"x11") == 0){
 		if( rv == 0){
-			extra_isFileChanged(x11_ssid_filename,lastModTime,5);
+			extra_isFileChanged(x11_ssid_filename,lastModTime,3);
 			self->pid_x11[0] = extra_getPidFromFile(x11_ssid_filename,4);
 			self->pid_x11[1] = extra_getPidFromFile(x11_ssid_filename,5);
-			if(sem){
-				sem_post(sem); //解锁等待线程
-			}
 		}
 		//解锁
+		gl_file_unlock_close(lockfd);
+		
 	}
-	
-	log_message(LOG_LEVEL_DEBUG,"Connnect protocol-%s failed",conn->protocol);
 	return rv;
 }
 
@@ -470,7 +518,7 @@ static int myxrdp_query_conn_redis(struct xrdp_wm *self){
 //extra code by yuliang
 //manager connection for init master and slave session
 int myxrdp_conn_manager(struct xrdp_wm *self){
-	if(self==NULL)
+	if(self == NULL)
 		return 1;
 	if(self->session==NULL)
 		return 1;
@@ -478,13 +526,16 @@ int myxrdp_conn_manager(struct xrdp_wm *self){
 		return 1;
 	struct trans *trans = self->session->trans;
 	const char *sessionId = self->session->client_info->username;
-	MyTransInfo_t *p1 = &self->my_trans_info;
+	if(g_strlen(self->ssid) > 0)
+		sessionId = self->ssid;
+
 	
-	if(strlen(sessionId) == 0){
+	MyTransInfo_t *p1 = &self->my_trans_info;
+	if(g_strlen(sessionId) == 0){
 		log_message(LOG_LEVEL_DEBUG,"Invalid sessionId");
 		return 1;
 	}
-	log_message(LOG_LEVEL_DEBUG,"username:%s",sessionId);
+	log_message(LOG_LEVEL_DEBUG,"sessionid:%s",sessionId);
 	
 	myxrdp_fill_filename(p1, sessionId);	
 	p1->tls = trans->tls;
@@ -503,7 +554,7 @@ int myxrdp_conn_manager(struct xrdp_wm *self){
 			return 1;
 		}
 		
-		if(myxrdp_query_conn_redis(self) == false){
+		if(!myxrdp_query_conn_redis(self)){
 			log_message(LOG_LEVEL_ERROR,"Query redis failed");
 		//	return 1;
 		}	
@@ -533,20 +584,94 @@ int myxrdp_conn_manager(struct xrdp_wm *self){
 	return 1;
 }
 
+static int myxrdp_writeUserArgsToFile(struct xrdp_client_info *info,const char *filename){
+	if(filename == NULL || info == NULL)
+		return (-1);
+	FILE* fp = fopen(filename,"w+");
+	if(fp == NULL){
+		perror("fopen");
+		return (-1);
+	}
 
-static void writeFile(const char*filename,const void *data,int size){
-	FILE *fp = fopen(filename,"a");
-	if(fp == NULL)
-		return ;
-	fwrite(data,size,1,fp);
+	//文件权限必须是666，因为用户池给的用户权限是普通用户
+	if(chmod(filename,0666) < 0){
+		perror("chmod");
+		return (-1);
+	}
+
+	int width = info->width;
+	int height = info->height;
+	char buffer[512]={0};
+	int nlen=snprintf(buffer,512,"%d\n",width);
+	fwrite(buffer,nlen,1,fp);
+	nlen=snprintf(buffer,512,"%d\n",height);
+	fwrite(buffer,nlen,1,fp);	
 	fclose(fp);
+	return 0;
 }
+
+
+int myxrdp_direct_connect_menu(struct xrdp_wm *self)
+{
+	if(self == NULL){
+		return 0;
+	}
+	
+	if(self->conf_extra->directMenuPathName==NULL){
+		log_message(LOG_LEVEL_ERROR,"direct_connect_menu:argments error");
+		return 0;
+	}
+		
+	//配置x11信息
+	if(!myxrdp_fill_conn_xorg(self->mm)){
+		log_message(LOG_LEVEL_ERROR,"set_connect_xorg failed");
+		return 1;
+	}
+	
+	//写文件信息
+	const char *filename = self->conf_extra->directMenuPathName;
+
+	//加锁,加锁内的任何函数都不能出错，否则会导致所有进程在此处阻塞
+	int lockfd = gl_file_block_lock("direct_conn_menu.lock");
+	
+	if(myxrdp_writeUserArgsToFile(self->session->client_info,filename) < 0){
+		log_message(LOG_LEVEL_ERROR,"writeUserArgsToFile failed");	
+		gl_file_unlock_close(lockfd);
+		return 1;
+	}
+	
+	int ret = 1;
+	long lastModTime = extra_getLastModTime(filename);
+	//连接xorg环境
+	if (xrdp_mm_connect(self->mm) == 0){
+		char tempsid[256] = {0};
+		extra_isFileChanged(filename,lastModTime,3);
+		if(extra_getDirectMenuTempSidFromFile(tempsid,256,filename)==0){
+				snprintf(self->tempsid,sizeof(self->tempsid),"%s",tempsid);
+				xrdp_wm_set_login_mode(self, 22);
+				self->work_mode = MODE_DIRECT_MENU;//直连菜单模式
+				xrdp_wm_delete_all_children(self);
+				self->dragging = 0;
+				self->pid_dm = extra_getDirectMenuPidFromFile(filename);
+				ret = 0;
+		}else{
+			log_message(LOG_LEVEL_ERROR,"extra_getDirectMenuTempSidFromFile failed");
+			ret = 1;
+		}
+	}
+	
+	//解锁
+	gl_file_unlock_close(lockfd);
+	return ret;
+}
+
 
 enum SessionType myxrdp_get_session_type(const char *filename){
 	if(g_strlen(filename) == 0){
 		errno = EINVAL;
 		return SES_ERROR;
 	}
+	
 	if(gl_file_existed(filename) == false){
 		gl_create_file(filename,0664);
 		return SES_MASTER;
@@ -555,7 +680,7 @@ enum SessionType myxrdp_get_session_type(const char *filename){
 		if(gl_file_null(filename) == 0){
 			return SES_OTHER;
 		}else{
-			writeFile(filename,"000000",6);
+			gl_file_append_line(filename,"000000",6);
 			return SES_SLAVE;
 		}
 	}

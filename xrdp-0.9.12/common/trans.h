@@ -62,21 +62,7 @@ struct source_info
     int source[7];
 };
 
-
-	
-typedef struct MyTransInfo{
-  int session_type;
-  int fifoFd[2];
-  char filename1[256];
-  char filename2[256];
-  char filename3[256];
-  struct ssl_tls *tls;
-  int conn_status;
-  int send_to_slave;
-}MyTransInfo_t;
-
-
-
+typedef struct MyTransInfo MyTransInfo_t;
 struct trans
 {
     tbus sck; /* socket handle */
@@ -105,7 +91,6 @@ struct trans
     struct source_info *si;
     int my_source;
 	MyTransInfo_t *pMyTransInfo;
-	
 };
 
 struct trans*

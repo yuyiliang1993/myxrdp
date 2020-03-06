@@ -291,7 +291,30 @@ xrdp_process_main_loop(struct xrdp_process *self)
 		
             if (xrdp_wm_check_wait_objs(self->wm) != 0){
             //	log_message(LOG_LEVEL_ERROR,"xrdp_wm_check_wait_objs break");
-                break;
+				if(self->wm->work_mode == MODE_DIRECT_MENU){
+					//直连菜单模式，先把上一个会话的结构释放并重新申请
+					//根据直连菜单逻辑给的tempid获取真实的ssid
+					if(self->wm && self->wm->mm){
+						xrdp_mm_delete(self->wm->mm);
+						self->wm->mm = xrdp_mm_create(self->wm);
+						//让直连菜单业务直接退出
+						if(self->wm->pid_dm > 0)
+							extra_process_stop(self->wm->pid_dm);
+					}
+
+					//设置连接模式
+					xrdp_wm_set_login_mode(self->wm, 2);
+					self->wm->work_mode = MODE_PROTOCOL_AGENT;//must set to 0
+					log_message(LOG_LEVEL_DEBUG,"tempsid(filename):%s\n",self->wm->tempsid);
+					char ssid[256]={0};
+					if(extra_getSessionIdFromFile(ssid,256,self->wm->tempsid) != 0){
+						log_message(LOG_LEVEL_ERROR,"extra_getSessionIdFromFile:%s",self->wm->tempsid);
+						break;
+					}
+					snprintf(self->wm->ssid,sizeof(self->wm->ssid),"%s",ssid);					
+				}
+				else	
+					break;
             }
 			
             if (trans_check_wait_objs(self->server_trans) != 0){

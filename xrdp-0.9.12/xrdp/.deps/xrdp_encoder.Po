@@ -18,10 +18,11 @@ xrdp_encoder.o: xrdp_encoder.c /usr/include/stdc-predef.h ../config_ac.h \
  ../common/arch.h xrdp.h ../common/parse.h ../common/trans.h \
  ../common/parse.h ../common/list.h ../common/list16.h \
  ../libxrdp/libxrdpinc.h ../common/xrdp_rail.h ../common/xrdp_constants.h \
- xrdp_types.h myxrdp_query.h ../common/defines.h ../common/os_calls.h \
- ../common/ssl_calls.h ../common/thread_calls.h ../common/file.h \
- ../common/xrdp_client_info.h ../common/log.h /usr/include/pthread.h \
- /usr/include/sched.h /usr/include/bits/sched.h /usr/include/xlocale.h \
+ xrdp_types.h myxrdp_query.h ../common/myxrdp_common.h \
+ ../common/defines.h ../common/os_calls.h ../common/ssl_calls.h \
+ ../common/thread_calls.h ../common/file.h ../common/xrdp_client_info.h \
+ ../common/log.h /usr/include/pthread.h /usr/include/sched.h \
+ /usr/include/bits/sched.h /usr/include/xlocale.h \
  /usr/include/bits/setjmp.h ../librfxcodec/include/rfxcodec_encode.h \
  ../librfxcodec/include/rfxcodec_common.h
 
@@ -114,6 +115,8 @@ xrdp.h:
 xrdp_types.h:
 
 myxrdp_query.h:
+
+../common/myxrdp_common.h:
 
 ../common/defines.h:
 

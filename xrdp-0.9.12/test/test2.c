@@ -1,31 +1,47 @@
-#include <semaphore.h>
 #include <stdio.h>
-#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/file.h> // 提供flock()函数，从#include可以看出，它是一个系统调用，而不是一个库函数
 #include <unistd.h>
+#define SESSIONPATH "/usr/local/tmp/xrdp"
 
-void test1(){
-	
-	sem_unlink("/sem_name");
-#if 0	
-	sem_t *sem = sem_open("/sem_name",O_CREAT,0666,1);
-	if(sem == NULL){
-		perror("sem_open");
-		return ;
+
+int gl_file_block_lock(const char *filename){
+
+	char buf[512]={0};
+	snprintf(buf,sizeof(buf),"%s/%s",SESSIONPATH,filename);
+	printf("filename:%s\n",buf);
+	int fd = open(buf, O_RDONLY|O_CREAT);
+	if (-1 == fd){
+		perror("open");
+		return -1;
 	}
-	int val;
-    sem_getvalue(sem, &val);
-    printf("parent:semaphore value:%d\n",val);
-	
-	while(1){
-		printf("sem_wait start:%ld\n",getpid());
-		sem_wait(sem);
-		printf("sem_wait end:%ld\n",getpid());
+    if (flock(fd, LOCK_EX) < 0){
+        perror("flock");
+		return -1;
 	}
-#endif
+	return fd;
 }
 
-int main(){
-	test1();
+int gl_file_unlock_close(int fd){
+	if(fd < 0)
+		return 1;
+	if (-1 == flock(fd, LOCK_UN)){
+		perror("fulock");
+	}
+	close(fd);
 	return 0;
 }
 
+
+
+int main(int argc, char *argv[])
+{ 
+	printf("%d try to get lock\n", getpid());
+	int fd = gl_file_block_lock("123456.lock");
+    printf("%d locked now, enter any key to continue ...\n", getpid());
+    getchar();
+    printf("%d prepare to release lock\n", getpid());
+	gl_file_unlock_close(fd);
+    // 释放锁
+    printf("lock was released now\n");
+}

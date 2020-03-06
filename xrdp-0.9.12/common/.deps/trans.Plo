@@ -14,11 +14,10 @@ trans.lo: trans.c /usr/include/stdc-predef.h ../config_ac.h os_calls.h \
  /usr/include/bits/stdlib-float.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h trans.h parse.h \
- ssl_calls.h log.h /usr/include/pthread.h /usr/include/sched.h \
- /usr/include/bits/sched.h /usr/include/xlocale.h \
- /usr/include/bits/setjmp.h myxrdp_mq.h myxrdp_common.h \
- /usr/include/string.h /usr/include/bits/string.h \
- /usr/include/bits/string2.h
+ ssl_calls.h myxrdp_common.h log.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/bits/sched.h /usr/include/xlocale.h \
+ /usr/include/bits/setjmp.h myxrdp_mq.h /usr/include/string.h \
+ /usr/include/bits/string.h /usr/include/bits/string2.h
 
 /usr/include/stdc-predef.h:
 
@@ -90,6 +89,8 @@ parse.h:
 
 ssl_calls.h:
 
+myxrdp_common.h:
+
 log.h:
 
 /usr/include/pthread.h:
@@ -103,8 +104,6 @@ log.h:
 /usr/include/bits/setjmp.h:
 
 myxrdp_mq.h:
-
-myxrdp_common.h:
 
 /usr/include/string.h:
 

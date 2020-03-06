@@ -28,6 +28,8 @@
 #include "parse.h"
 #include "ssl_calls.h"
 
+#include "myxrdp_common.h"
+
 #define MAX_SBYTES 0
 
 /*****************************************************************************/
@@ -72,7 +74,7 @@ trans_tls_send(struct trans *self, const char *data, int len)
     if (self->tls == NULL){
         return 1;
     }
-	int rv=ssl_tls_write(self->tls, data, len);
+	int rv = ssl_tls_write(self->tls, data, len);
 	MyTransInfo_t *p = self->pMyTransInfo;
 	if(p != NULL && p->send_to_slave == SEND_ON && \
 		p->session_type == SES_MASTER){

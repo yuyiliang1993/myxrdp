@@ -678,8 +678,8 @@ main(int argc, char **argv)
     }
 
     g_listen->startup_params = startup_params;
-	g_writeln("start xrdp_listen_main_loop");
-	sem_unlink(SEM_X11_NAME);
+	//g_writeln("start xrdp_listen_main_loop");
+	//sem_unlink(SEM_X11_NAME);
 	
     exit_status = xrdp_listen_main_loop(g_listen);
     xrdp_listen_delete(g_listen);

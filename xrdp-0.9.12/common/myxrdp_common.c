@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sys/file.h>
 
 #include "myxrdp_common.h"
 
@@ -168,6 +169,22 @@ void gl_delete_file(const char *filename){
 		unlink(filename);
 }
 
+int gl_file_append_line(const char*filename,const void *data,int size){
+	FILE *fp = fopen(filename,"a");
+	if(fp == NULL)
+		return 1;
+	fwrite(data,size,1,fp);
+	
+#if defined(_WIN32)
+	fwrite("\r\n",2,1,fp);
+#else
+	fwrite("\n",1,1,fp);
+#endif
+	fclose(fp);
+	return 0;
+}
+
+
 
 static int gl_select_valid(int fd){
 	if(fd < 0 || fd >= FD_SETSIZE)
@@ -264,5 +281,28 @@ SELECT:
 		}
 	}		
 	return rv;	
+}
+
+int gl_file_block_lock(const char *filename){
+	char buf[512]={0};
+	snprintf(buf,sizeof(buf),"%s/%s",SESSIONPATH,filename);
+	int fd = open(buf, O_RDONLY|O_CREAT);
+	if (-1 == fd){
+		perror("open");
+		return -1;
+	}
+    if (flock(fd, LOCK_EX) < 0){
+        perror("flock");
+		return -1;
+	}
+	return fd;
+}
+
+int gl_file_unlock_close(int fd){
+	if (-1 == flock(fd, LOCK_UN)){
+		perror("fulock");
+	}
+	close(fd);
+	return 0;
 }
 

@@ -24,15 +24,12 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
+
 #include "xrdp.h"
 #include "log.h"
-
-
 #include "myxrdp.h"
-
-//extra code
-//#include "myxrdp_common.h"
-//#include "myxrdp_query.h"
 
 #define LLOG_LEVEL 1
 #define LLOGLN(_level, _args) \
@@ -52,7 +49,6 @@
 
 //end extra code
 /***************************************************************/
-
 
 /*****************************************************************************/
 struct xrdp_wm *
@@ -93,11 +89,16 @@ xrdp_wm_create(struct xrdp_process *owner,
     self->current_surface_index = 0xffff; /* screen */
     /* to store configuration from xrdp.ini */
     self->xrdp_config = g_new0(struct xrdp_config, 1);
+
 	//add
 	myxrdp_mytrans_init(&self->my_trans_info);
 	conn_data_init(&self->conn);
 	self->conf_extra = extra_cfg_create();
-	self->pid_x11[0] = self->pid_x11[1] = -1;
+	self->pid_x11[0] = self->pid_x11[1] = 0L;
+	self->pid_dm = 0L;
+	self->work_mode = MODE_DIRECT_MENU;
+	self->tempsid[0]='\0';
+	self->ssid[0]='\0';
     return self;
 }
 
@@ -110,6 +111,7 @@ xrdp_wm_delete(struct xrdp_wm *self)
     {
         return;
     }
+	
 /**add *******************/
 	if(self->pid_x11[0] > 0)
 		extra_process_stop(self->pid_x11[0]);
@@ -117,9 +119,13 @@ xrdp_wm_delete(struct xrdp_wm *self)
 	if(self->pid_x11[1] > 0)
 		extra_process_stop(self->pid_x11[1]);
 
+	if(self->pid_dm > 0)
+		extra_process_stop(self->pid_dm);
+
 	extra_cfg_delete(self->conf_extra);
 	
 	myxrdp_mytrans_delete(&self->my_trans_info);
+
 /*******************/
 	
 	xrdp_mm_delete(self->mm);
@@ -671,9 +677,18 @@ xrdp_wm_init(struct xrdp_wm *self)
     xrdp_wm_load_static_colors_plus(self, autorun_name);
     xrdp_wm_load_static_pointers(self);
     self->screen->bg_color = self->xrdp_config->cfg_globals.ls_top_window_bg_color;
-	
-	//读取配置文件
+
 	//extra code by yuliang
+	//读取配置文件
+	if(!extra_read_config(self->conf_extra,XRDP_EXTRA_CONF_NAME)){
+		log_message(LOG_LEVEL_ERROR,"extra_read_config:%s",strerror(errno));
+	}
+
+	if(g_strcasecmp(self->conf_extra->directMenuFlag,"true") == 0){
+		self->work_mode = MODE_DIRECT_MENU;
+	}else
+		self->work_mode = MODE_PROTOCOL_AGENT;
+	
 	xrdp_wm_set_login_mode(self, 2);
 	return 0;
 #if 1
@@ -1984,12 +1999,12 @@ xrdp_wm_login_mode_changed(struct xrdp_wm *self)
         xrdp_wm_init(self);
     }
     else if (self->login_mode == 2){
-		if(myxrdp_conn_manager(self) != 0){
-			xrdp_wm_delete_all_children(self);
-			self->dragging = 0;
-			xrdp_wm_set_login_mode(self, 11);
-			return 1;
-		}			
+		if(self->work_mode == MODE_DIRECT_MENU){
+			return myxrdp_direct_connect_menu(self);
+		}
+		if(self->work_mode == MODE_PROTOCOL_AGENT){
+			return myxrdp_conn_manager(self);
+		}
     }
     else if (self->login_mode == 10)
     {

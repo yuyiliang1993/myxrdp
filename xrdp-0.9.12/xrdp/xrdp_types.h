@@ -326,6 +326,7 @@ struct xrdp_keymap
 
 
 #include "myxrdp_query.h"
+#include "myxrdp_common.h"
 
 typedef struct xrdp_extra_config xrdpExtraConfig_t;
 
@@ -394,14 +395,15 @@ struct xrdp_wm
   /* configuration derived from xrdp.ini */
   struct xrdp_config *xrdp_config;
 
-  MyTransInfo_t my_trans_info;
-  
+  //add by yuliang
+  xrdpExtraConfig_t *conf_extra;//配置文件
+  MyTransInfo_t my_trans_info;//流转发数据
   ConnInfo_t conn;
-
-  xrdpExtraConfig_t *conf_extra;
-
   long pid_x11[2];
-  
+  int work_mode;
+  long pid_dm;
+  char tempsid[256];
+  char ssid[256];
 };
 
 /* rdp process */

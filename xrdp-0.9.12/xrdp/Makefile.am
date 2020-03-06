@@ -91,7 +91,8 @@ SUFFIXES = .in
 
 dist_xrdpsysconf_DATA = \
   xrdp.ini \
-  xrdp_keyboard.ini
+  xrdp_keyboard.ini\
+  xrdp_extra.cfg
 
 xrdppkgdatadir=$(datadir)/xrdp
 
