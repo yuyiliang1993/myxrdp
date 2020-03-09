@@ -203,8 +203,10 @@ static int query_conn_redis_server(QueryRedisData_t *query){
 		result = false;
 		goto RET;
 	}
-	
+
+#ifdef __DEBUG_OUT__	
 	log_message(LOG_LEVEL_DEBUG,"send:%s",packetstring);
+#endif
 
 	char buffer[2048]={0};
 	if(query->data_recv(sock,buffer,sizeof(buffer))){

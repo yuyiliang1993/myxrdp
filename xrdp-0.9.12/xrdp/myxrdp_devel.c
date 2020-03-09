@@ -12,56 +12,33 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
-
-
 #include "xrdp.h"
 #include "log.h"
 
-//extra code
 #include "myxrdp.h"
 
-
-void myxrdp_mytrans_init(MyTransInfo_t*p){
+MyTransInfo_t *myxrdp_mytrans_create(const char *sessionid){
+	MyTransInfo_t*p = (MyTransInfo_t*)g_malloc(sizeof(struct MyTransInfo),1);
 	p->fifoFd[0] = p->fifoFd[1] = -1;
 	p->filename1[0] = p->filename2[0] = '\0';
 	p->session_type = SES_OTHER;
 	p->tls = NULL;
 	p->conn_status = DISCONNECTED;
-	p->send_to_slave = SEND_OFF;	
+	p->send_to_slave = SEND_OFF;
+	g_snprintf(p->filename1,sizeof(p->filename1),"%s/%s_1.fifo",SESSIONPATH,sessionid);
+	g_snprintf(p->filename2,sizeof(p->filename2),"%s/%s_2.fifo",SESSIONPATH,sessionid);
+	g_snprintf(p->filename3,sizeof(p->filename3),"%s/%s_3.tmp",SESSIONPATH,sessionid);
+	return p;
 }
 
-
-int myxrdp_send_disconnect(MyTransInfo_t *p){
-	if(p == NULL)
-		return 1;
-	PacketInfo_t pack;
-	pack.type = DATA_TYPE_DISCONN;
-	int fd = -1;
-	if(p->session_type == SES_MASTER){
-		fd = p->fifoFd[0];//读1写0
-	}
-	else if(p->session_type == SES_SLAVE){
-		fd = p->fifoFd[1];//读0写1
-	}
-	if(fd < 0)
-		return 1;
-	log_message(LOG_LEVEL_DEBUG,"%d send disconnect",p->session_type);
-	if(gl_write(fd,&pack,sizeof(pack)) < 0){
-		log_message(LOG_LEVEL_DEBUG,"mywrite:%s",strerror(errno));
-		return 1;
-	}
-	return 0;
-}
-
-void myxrdp_mytrans_delete(MyTransInfo_t*p){
+static void myxrdp_mytrans_give(MyTransInfo_t *p){	
 	if(p == NULL)
 		return;
-	
-	myxrdp_send_disconnect(p);
-	
+		
+#ifdef __DEBUG_OUT__	
 	log_message(LOG_LEVEL_DEBUG,"closefd:%d",p->fifoFd[0]);
 	log_message(LOG_LEVEL_DEBUG,"closefd:%d",p->fifoFd[1]);
+#endif
 	gl_closeFd(p->fifoFd[0]);
 	gl_closeFd(p->fifoFd[1]);	
 	if(p->session_type == SES_MASTER){
@@ -76,6 +53,33 @@ void myxrdp_mytrans_delete(MyTransInfo_t*p){
 	p->session_type = SES_OTHER;
 	p->send_to_slave = SEND_OFF;
 }
+
+int myxrdp_mytrans_send_disconn(MyTransInfo_t *p){
+	if(p == NULL)
+		return 1;
+	PacketInfo_t pack;
+	pack.type = DATA_TYPE_DISCONN;
+	int fd = -1;
+	if(p->session_type == SES_MASTER){
+		fd = p->fifoFd[0];//读1写0
+	}
+	else if(p->session_type == SES_SLAVE){
+		fd = p->fifoFd[1];//读0写1
+	}
+	if(fd < 0)
+		return 1;
+	if(gl_fd_can_send(fd,100)){
+		gl_write(fd,&pack,sizeof(pack));
+	}
+	return 0;
+}
+
+void myxrdp_mytrans_delete(MyTransInfo_t* p){
+	myxrdp_mytrans_send_disconn(p);
+	myxrdp_mytrans_give(p);
+	g_free(p);
+}
+
 
 
 int myxrdp_set_rdp(	struct xrdp_mm* self)
@@ -111,14 +115,14 @@ void myxrdp_set_wait_objs(struct xrdp_wm *self,tbus*robjs,int *rc)
 	if(self == NULL)
 		return;
 	
-	if(self->my_trans_info.session_type == SES_SLAVE){
+	if(self->my_trans_info->session_type == SES_SLAVE){
 		   int i = *rc;
-           robjs[i++] = self->my_trans_info.fifoFd[0];
+           robjs[i++] = self->my_trans_info->fifoFd[0];
            *rc = i;
 	}
-	if(self->my_trans_info.session_type == SES_MASTER){
+	if(self->my_trans_info->session_type == SES_MASTER){
 		   int i = *rc;
-           robjs[i++] = self->my_trans_info.fifoFd[1];
+           robjs[i++] = self->my_trans_info->fifoFd[1];
            *rc = i;
 	}
 }
@@ -190,7 +194,7 @@ int myxrdp_read_fifo_data(struct xrdp_wm *self){
 	if(self == NULL){
 		return 0;
 	}
-	MyTransInfo_t*p = &self->my_trans_info;
+	MyTransInfo_t*p = self->my_trans_info;
 	if(p == NULL)
 		return 1;
 	if(p->session_type == SES_SLAVE){	
@@ -202,13 +206,6 @@ int myxrdp_read_fifo_data(struct xrdp_wm *self){
 	return 0;
 }
 
-void myxrdp_fill_filename(MyTransInfo_t*p,const char *sessionid){
-	snprintf(p->filename1,sizeof(p->filename1),"%s/%s_1.fifo",SESSIONPATH,sessionid);
-	snprintf(p->filename2,sizeof(p->filename1),"%s/%s_2.fifo",SESSIONPATH,sessionid);
-	snprintf(p->filename3,sizeof(p->filename1),"%s/%s_3.tmp",SESSIONPATH,sessionid);
-}
-
-
 int myxrdp_master_recv_args(struct xrdp_wm *self,int fd){
 	session_arg_t data_arg;
 	//wait slave session write connection argments
@@ -216,7 +213,7 @@ int myxrdp_master_recv_args(struct xrdp_wm *self,int fd){
 		log_message(LOG_LEVEL_ERROR,"wait slave connection timeouts:s");
 		return 1;
 	}
-
+	
 	//read argments
 	if(gl_read(fd, &data_arg,sizeof(data_arg))<0){
 		log_message(LOG_LEVEL_ERROR,"myread session argments failed:%s",strerror(errno));
@@ -447,7 +444,7 @@ static int myxrdp_writeSessionIdToFile(const char *s_name,int width,int height,c
 
 
 //连接目标机
-static int myxrdp_connect_dest(struct xrdp_wm *self){
+static int myxrdp_connect_protocol(struct xrdp_wm *self){
 	ConnInfo_t *conn = &self->conn;
 	const char *x11_ssid_filename = X11_SSID_FILENAME;
 	long lastModTime = 0L;
@@ -469,6 +466,7 @@ static int myxrdp_connect_dest(struct xrdp_wm *self){
 			log_message(LOG_LEVEL_ERROR,"set_connect_info_x11 failed");
 			return 1;
 		}
+		
 		char *ssid = self->session->client_info->username;
 		int width = self->session->client_info->width;
 		int height = self->session->client_info->height;
@@ -480,14 +478,14 @@ static int myxrdp_connect_dest(struct xrdp_wm *self){
 	
 	
 	int rv = 0;
-	self->my_trans_info.send_to_slave = SEND_ON;
+	self->my_trans_info->send_to_slave = SEND_ON;
 	if (xrdp_mm_connect(self->mm) == 0){		
 		xrdp_wm_set_login_mode(self, 3);
 		xrdp_wm_delete_all_children(self);
 		self->dragging = 0;
 	}else {
 		rv = 1;
-		self->my_trans_info.send_to_slave = SEND_OFF;
+		self->my_trans_info->send_to_slave = SEND_OFF;
 		log_message(LOG_LEVEL_DEBUG,"Connnect failed protocol:%s ",conn->protocol);
 	}
 	if(g_strcmp(conn->protocol,"x11") == 0){
@@ -511,7 +509,11 @@ static int myxrdp_query_conn_redis(struct xrdp_wm *self){
 		return false;
 	}	
 	qrd_delete(qrd);
+
+#ifdef __DEBUG_OUT__	
 	log_message(LOG_LEVEL_ERROR,"query redis failed");
+#endif
+
 	return true;
 }
 
@@ -528,20 +530,21 @@ int myxrdp_conn_manager(struct xrdp_wm *self){
 	const char *sessionId = self->session->client_info->username;
 	if(g_strlen(self->ssid) > 0)
 		sessionId = self->ssid;
-
-	
-	MyTransInfo_t *p1 = &self->my_trans_info;
 	if(g_strlen(sessionId) == 0){
 		log_message(LOG_LEVEL_DEBUG,"Invalid sessionId");
 		return 1;
 	}
 	log_message(LOG_LEVEL_DEBUG,"sessionid:%s",sessionId);
-	
-	myxrdp_fill_filename(p1, sessionId);	
+
+	if(self->my_trans_info == NULL){
+		self->my_trans_info = myxrdp_mytrans_create(sessionId);
+		trans->pMyTransInfo = self->my_trans_info;//主会话转发需要用到此接口
+	}
+	MyTransInfo_t *p1 = self->my_trans_info;
 	p1->tls = trans->tls;
 	p1->session_type = myxrdp_get_session_type(p1->filename3);
 	log_message(LOG_LEVEL_DEBUG,"session type:%d",p1->session_type);
-	trans->pMyTransInfo = &self->my_trans_info;
+	
 	if(p1->session_type == SES_MASTER){
 		log_message(LOG_LEVEL_DEBUG,"I am master session,pid-%d",getpid());
 		if(myxrdp_open_fifo_rw(p1) < 0){
@@ -556,13 +559,14 @@ int myxrdp_conn_manager(struct xrdp_wm *self){
 		
 		if(!myxrdp_query_conn_redis(self)){
 			log_message(LOG_LEVEL_ERROR,"Query redis failed");
-		//	return 1;
-		}	
+			return 1;
+		}
+		
 #ifdef __DEBUG_OUT__
 		conn_data_show(&self->conn);
 #endif		
 		//连接目标机
-		return myxrdp_connect_dest(self);
+		return myxrdp_connect_protocol(self);
 	}
 	else if(p1->session_type == SES_SLAVE){
 		log_message(LOG_LEVEL_DEBUG,"I am slave session,pid-%d",getpid());		
@@ -611,7 +615,7 @@ static int myxrdp_writeUserArgsToFile(struct xrdp_client_info *info,const char *
 }
 
 
-int myxrdp_direct_connect_menu(struct xrdp_wm *self)
+int myxrdp_direct_conn_menu(struct xrdp_wm *self)
 {
 	if(self == NULL){
 		return 0;
@@ -647,7 +651,7 @@ int myxrdp_direct_connect_menu(struct xrdp_wm *self)
 		char tempsid[256] = {0};
 		extra_isFileChanged(filename,lastModTime,3);
 		if(extra_getDirectMenuTempSidFromFile(tempsid,256,filename)==0){
-				snprintf(self->tempsid,sizeof(self->tempsid),"%s",tempsid);
+				g_snprintf(self->tempsid,sizeof(self->tempsid),"%s",tempsid);
 				xrdp_wm_set_login_mode(self, 22);
 				self->work_mode = MODE_DIRECT_MENU;//直连菜单模式
 				xrdp_wm_delete_all_children(self);
@@ -686,5 +690,3 @@ enum SessionType myxrdp_get_session_type(const char *filename){
 	}
 	return SES_OTHER;
 }
-
-

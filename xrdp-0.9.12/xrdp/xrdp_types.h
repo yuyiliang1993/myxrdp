@@ -397,7 +397,7 @@ struct xrdp_wm
 
   //add by yuliang
   xrdpExtraConfig_t *conf_extra;//配置文件
-  MyTransInfo_t my_trans_info;//流转发数据
+  MyTransInfo_t *my_trans_info;//流转发数据
   ConnInfo_t conn;
   long pid_x11[2];
   int work_mode;

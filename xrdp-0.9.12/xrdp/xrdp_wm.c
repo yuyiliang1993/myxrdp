@@ -91,7 +91,7 @@ xrdp_wm_create(struct xrdp_process *owner,
     self->xrdp_config = g_new0(struct xrdp_config, 1);
 
 	//add
-	myxrdp_mytrans_init(&self->my_trans_info);
+//	myxrdp_mytrans_init(&self->my_trans_info);
 	conn_data_init(&self->conn);
 	self->conf_extra = extra_cfg_create();
 	self->pid_x11[0] = self->pid_x11[1] = 0L;
@@ -99,6 +99,7 @@ xrdp_wm_create(struct xrdp_process *owner,
 	self->work_mode = MODE_DIRECT_MENU;
 	self->tempsid[0]='\0';
 	self->ssid[0]='\0';
+	self->my_trans_info = NULL;
     return self;
 }
 
@@ -123,8 +124,11 @@ xrdp_wm_delete(struct xrdp_wm *self)
 		extra_process_stop(self->pid_dm);
 
 	extra_cfg_delete(self->conf_extra);
+
+	if(self->my_trans_info)
+		myxrdp_mytrans_delete(self->my_trans_info);
 	
-	myxrdp_mytrans_delete(&self->my_trans_info);
+//	myxrdp_mytrans_delete(&self->my_trans_info);
 
 /*******************/
 	
@@ -2000,7 +2004,7 @@ xrdp_wm_login_mode_changed(struct xrdp_wm *self)
     }
     else if (self->login_mode == 2){
 		if(self->work_mode == MODE_DIRECT_MENU){
-			return myxrdp_direct_connect_menu(self);
+			return myxrdp_direct_conn_menu(self);
 		}
 		if(self->work_mode == MODE_PROTOCOL_AGENT){
 			return myxrdp_conn_manager(self);

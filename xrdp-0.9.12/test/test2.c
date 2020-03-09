@@ -4,7 +4,6 @@
 #include <unistd.h>
 #define SESSIONPATH "/usr/local/tmp/xrdp"
 
-
 int gl_file_block_lock(const char *filename){
 
 	char buf[512]={0};

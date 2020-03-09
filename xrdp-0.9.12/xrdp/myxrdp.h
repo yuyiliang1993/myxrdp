@@ -11,13 +11,15 @@ void myxrdp_clean(struct xrdp_wm *self);
 
 void myxrdp_set_wait_objs(struct xrdp_wm *self,tbus*robjs,int *rc);
 
-void myxrdp_mytrans_init(MyTransInfo_t*p);
-
-void myxrdp_mytrans_delete(MyTransInfo_t*p);
-
 int myxrdp_conn_manager(struct xrdp_wm *self);
 
 int myxrdp_direct_connect_menu(struct xrdp_wm *self);
+
+MyTransInfo_t *myxrdp_mytrans_create(const char *sessionid);
+
+void myxrdp_mytrans_delete(MyTransInfo_t* p);
+
+
 
 enum SessionType;//in myxrdp_common.h
 

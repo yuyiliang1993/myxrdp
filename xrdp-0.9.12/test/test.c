@@ -7,6 +7,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "cJSON.h"
 #define ITEM(r,v) cJSON_GetObjectItem((r),(v))
@@ -69,9 +72,7 @@ void test2(){
 
 }
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+
 
 static int gl_fd_select_valid(int fd){
 	if(fd < 0 || fd >= FD_SETSIZE)

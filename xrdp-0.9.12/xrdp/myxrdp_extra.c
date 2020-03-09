@@ -83,6 +83,8 @@ static char * getLineFromFile(const char*filename,int lineNum,char *line,int siz
 
 
 int extra_process_stop(long pid){
+	if(pid <= 0)
+		return 0;
 	log_message(LOG_LEVEL_DEBUG,"kill pid:%ld",pid);
 	return kill((pid_t)pid,SIGKILL);
 }
